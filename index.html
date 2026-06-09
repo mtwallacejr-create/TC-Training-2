@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stacked Method TC Training — Module 2</title>
+<style>
+  :root {
+    --navy: #1a2e4a;
+    --gold: #c8922a;
+    --rust: #c0392b;
+    --light-bg: #f7f4ef;
+    --card-bg: #ffffff;
+    --border: #ddd4c0;
+    --text: #2c2c2c;
+    --muted: #666;
+    --success: #27ae60;
+    --warning: #e67e22;
+    --danger: #c0392b;
+    --info: #2980b9;
+    --highlight: #fdf3e3;
+    --critical: #fde8e8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', serif;
+    background: var(--light-bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  /* ─── HEADER ─── */
+  .site-header {
+    background: var(--navy);
+    color: white;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    border-bottom: 2px solid var(--gold);
+  }
+  .header-top .logo {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: sans-serif;
+  }
+  .header-top h1 {
+    font-size: 18px;
+    font-weight: normal;
+    letter-spacing: 1px;
+  }
+  .score-badge {
+    background: var(--gold);
+    color: var(--navy);
+    font-family: sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 6px 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .progress-bar-wrap { background: rgba(255,255,255,0.1); height: 4px; }
+  .progress-bar-fill { height: 100%; background: var(--gold); transition: width 0.4s ease; width: 0%; }
+
+  .nav-tabs { display: flex; background: rgba(0,0,0,0.2); overflow-x: auto; }
+  .nav-tab {
+    padding: 10px 18px;
+    font-family: sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    cursor: pointer;
+    border: none;
+    background: none;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .nav-tab:hover { color: rgba(255,255,255,0.85); }
+  .nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .nav-tab.locked { opacity: 0.4; cursor: not-allowed; }
+  .nav-tab .check { color: var(--success); margin-left: 4px; }
+
+  .main { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  .section-panel { display: none; }
+  .section-panel.active { display: block; }
+
+  .section-header { margin-bottom: 32px; }
+  .section-label {
+    font-family: sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-size: 32px;
+    color: var(--navy);
+    border-bottom: 3px solid var(--gold);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+  .section-intro { font-style: italic; color: var(--muted); font-size: 16px; }
+
+  .content-block { margin-bottom: 32px; }
+  .block-title { font-size: 20px; color: var(--gold); margin-bottom: 14px; }
+  p { margin-bottom: 14px; font-size: 16px; }
+
+  /* ─── DOC CARD ─── */
+  .doc-card {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--card-bg);
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .doc-card-header {
+    background: var(--navy);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .doc-card-title { font-size: 18px; color: white; font-weight: bold; }
+  .doc-badge {
+    font-family: sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: var(--gold);
+    color: var(--navy);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+  .doc-card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+  }
+  @media (max-width: 680px) { .doc-card-body { grid-template-columns: 1fr; } }
+  .doc-col {
+    padding: 16px 18px;
+    border-right: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .doc-col:last-child { border-right: none; }
+  .doc-col-label {
+    font-family: sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: bold;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--gold);
+  }
+  .doc-col ul { padding-left: 16px; }
+  .doc-col li { margin-bottom: 5px; line-height: 1.5; }
+
+  /* ─── CALLOUTS ─── */
+  .callout {
+    border-left: 5px solid var(--navy);
+    background: #eef2f8;
+    padding: 18px 22px;
+    border-radius: 0 6px 6px 0;
+    margin: 20px 0;
+  }
+  .callout p { margin: 0; font-weight: bold; font-size: 17px; color: var(--navy); }
+
+  .critical-box {
+    background: var(--critical);
+    border: 2px solid var(--rust);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .critical-box .critical-label {
+    font-family: sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--rust);
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  .critical-box p { color: var(--text); }
+
+  .key-term-box {
+    background: var(--highlight);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 20px 0;
+  }
+  .key-term-box .kt-label {
+    font-family: sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+
+  /* ─── QUIZ ─── */
+  .quiz-section {
+    background: var(--navy);
+    color: white;
+    border-radius: 12px;
+    padding: 32px;
+    margin-top: 40px;
+  }
+  .quiz-section h3 { font-size: 20px; color: var(--gold); margin-bottom: 6px; font-family: sans-serif; letter-spacing: 1px; }
+  .quiz-section .quiz-intro { font-size: 13px; color: rgba(255,255,255,0.65); font-family: sans-serif; margin-bottom: 28px; font-style: italic; }
+  .difficulty-badge {
+    display: inline-block;
+    font-family: sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+  .diff-basic { background: #27ae60; color: white; }
+  .diff-intermediate { background: #e67e22; color: white; }
+  .diff-advanced { background: #c0392b; color: white; }
+  .diff-expert { background: #8e44ad; color: white; }
+
+  .quiz-q { margin-bottom: 28px; }
+  .quiz-q .q-text { font-size: 15px; margin-bottom: 14px; line-height: 1.6; }
+  .quiz-q .q-num { font-family: sans-serif; font-size: 11px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .quiz-q .q-type { font-family: sans-serif; font-size: 10px; color: rgba(255,255,255,0.45); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .mc-options { display: flex; flex-direction: column; gap: 8px; }
+  .mc-option {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 6px; padding: 10px 14px; cursor: pointer; transition: all 0.2s; font-size: 14px;
+  }
+  .mc-option:hover { background: rgba(255,255,255,0.12); border-color: var(--gold); }
+  .mc-option.selected { background: rgba(200,146,42,0.2); border-color: var(--gold); }
+  .mc-option.correct { background: rgba(39,174,96,0.25); border-color: #27ae60; }
+  .mc-option.incorrect { background: rgba(192,57,43,0.25); border-color: #c0392b; }
+  .mc-option .opt-letter { font-weight: bold; color: var(--gold); min-width: 20px; font-family: sans-serif; }
+
+  .tf-options { display: flex; gap: 12px; }
+  .tf-btn {
+    padding: 10px 28px; border-radius: 6px; border: 1.5px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.07); color: white; font-size: 15px; cursor: pointer; transition: all 0.2s; font-family: sans-serif;
+  }
+  .tf-btn:hover { background: rgba(255,255,255,0.14); }
+  .tf-btn.selected { background: rgba(200,146,42,0.2); border-color: var(--gold); }
+  .tf-btn.correct { background: rgba(39,174,96,0.25); border-color: #27ae60; }
+  .tf-btn.incorrect { background: rgba(192,57,43,0.25); border-color: #c0392b; }
+
+  .short-answer-input {
+    width: 100%; background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.2);
+    border-radius: 6px; padding: 12px 14px; color: white; font-size: 14px; font-family: Georgia, serif;
+    resize: vertical; min-height: 80px; transition: border-color 0.2s;
+  }
+  .short-answer-input:focus { outline: none; border-color: var(--gold); }
+  .short-answer-input::placeholder { color: rgba(255,255,255,0.35); }
+
+  .feedback { margin-top: 10px; padding: 10px 14px; border-radius: 6px; font-size: 13px; font-family: sans-serif; display: none; }
+  .feedback.show { display: block; }
+  .feedback.correct { background: rgba(39,174,96,0.2); border: 1px solid #27ae60; color: #a8f5c2; }
+  .feedback.incorrect { background: rgba(192,57,43,0.2); border: 1px solid #c0392b; color: #ffb3ae; }
+  .feedback.model { background: rgba(41,128,185,0.2); border: 1px solid #2980b9; color: #acd8f5; }
+
+  .quiz-submit-row { display: flex; align-items: center; justify-content: space-between; margin-top: 28px; flex-wrap: wrap; gap: 12px; }
+  .btn-submit {
+    background: var(--gold); color: var(--navy); border: none; padding: 12px 32px;
+    border-radius: 6px; font-size: 15px; font-weight: bold; font-family: sans-serif;
+    cursor: pointer; transition: background 0.2s; letter-spacing: 1px;
+  }
+  .btn-submit:hover { background: #e0a832; }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .quiz-score-display { font-family: sans-serif; font-size: 16px; color: var(--gold); display: none; }
+  .quiz-score-display.show { display: block; }
+
+  .score-result { margin-top: 24px; padding: 20px 24px; border-radius: 8px; display: none; text-align: center; }
+  .score-result.show { display: block; }
+  .score-result.pass { background: rgba(39,174,96,0.15); border: 2px solid #27ae60; }
+  .score-result.fail { background: rgba(192,57,43,0.15); border: 2px solid #c0392b; }
+  .score-result h4 { font-size: 22px; margin-bottom: 8px; }
+  .score-result p { font-size: 14px; color: rgba(255,255,255,0.75); font-family: sans-serif; }
+
+  .btn-next {
+    display: none; margin-top: 16px; background: var(--navy); color: var(--gold);
+    border: 2px solid var(--gold); padding: 12px 28px; border-radius: 6px;
+    font-size: 14px; font-weight: bold; font-family: sans-serif; cursor: pointer;
+    letter-spacing: 1px; transition: all 0.2s;
+  }
+  .btn-next.show { display: inline-block; }
+  .btn-next:hover { background: var(--gold); color: var(--navy); }
+
+  /* ─── WRAPUP ─── */
+  .wrapup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
+  @media (max-width: 640px) { .wrapup-grid { grid-template-columns: 1fr; } }
+  .stat-card { background: var(--card-bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 24px; text-align: center; }
+  .stat-card .stat-num { font-size: 48px; font-weight: bold; color: var(--navy); font-family: sans-serif; }
+  .stat-card .stat-label { font-family: sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+  .objectives-list { list-style: none; margin: 20px 0; }
+  .obj-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
+  .obj-check { width: 22px; height: 22px; border: 2px solid var(--navy); border-radius: 4px; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; margin-top: 2px; }
+  .obj-check.checked { background: var(--navy); border-color: var(--navy); }
+  .obj-check.checked::after { content: '✓'; color: white; font-size: 13px; font-weight: bold; }
+
+  .scroll-hint { text-align: center; font-family: sans-serif; font-size: 12px; color: var(--muted); margin-top: 24px; }
+
+  .module-nav-btn {
+    display: inline-block; margin-top: 28px; background: var(--navy); color: var(--gold);
+    border: 2px solid var(--gold); padding: 14px 32px; border-radius: 6px;
+    font-size: 15px; font-weight: bold; font-family: sans-serif; cursor: pointer;
+    letter-spacing: 1px; text-decoration: none; transition: all 0.2s;
+  }
+  .module-nav-btn:hover { background: var(--gold); color: var(--navy); }
+
+  @media (max-width: 500px) {
+    .header-top { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+    .main { padding: 24px 16px 60px; }
+    .section-title { font-size: 24px; }
+    .quiz-section { padding: 22px 18px; }
+    .doc-card-body { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-top">
+    <span class="logo">Stacked Method TC Training</span>
+    <h1>Module 2 — TC Document Reference Guide</h1>
+    <div class="score-badge" id="totalScore">
+      <span>Score:</span>
+      <span id="scoreDisplay">0 / 0</span>
+    </div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+  <nav class="nav-tabs" id="navTabs">
+    <button class="nav-tab active"  onclick="showSection('s1')"    id="tab-s1">§1 Initiation</button>
+    <button class="nav-tab"         onclick="showSection('s3')"    id="tab-s3">§3 Assignment</button>
+    <button class="nav-tab"         onclick="showSection('s4')"    id="tab-s4">§4 JV &amp; Partners</button>
+    <button class="nav-tab"         onclick="showSection('s5')"    id="tab-s5">§5 Creative Finance</button>
+    <button class="nav-tab"         onclick="showSection('s6')"    id="tab-s6">§6 EMD Lending</button>
+    <button class="nav-tab"         onclick="showSection('s7')"    id="tab-s7">§7 Entity &amp; Auth</button>
+    <button class="nav-tab"         onclick="showSection('s8')"    id="tab-s8">§8 Addenda</button>
+    <button class="nav-tab"         onclick="showSection('quiz')"  id="tab-quiz">📋 Module Quiz</button>
+    <button class="nav-tab"         onclick="showSection('wrapup')" id="tab-wrapup">🏁 Wrap-Up</button>
+    <button class="nav-tab"         onclick="showSection('pdf')"  id="tab-pdf">📑 Document Reference</button>
+  </nav>
+</header>
+
+<main class="main">
+
+<!-- ══════════════════════════════════════════
+     SECTION 1: DEAL INITIATION
+══════════════════════════════════════════ -->
+<div class="section-panel active" id="panel-s1">
+  <div class="section-header">
+    <div class="section-label">Section 1</div>
+    <h2 class="section-title">Deal Initiation</h2>
+    <p class="section-intro">Every deal opens the same way: LOI to test the deal, Cash PSA to lock it in. Know the difference between the two and when each is in play.</p>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">Letter of Intent (LOI)</span>
+      <span class="doc-badge">Initiation</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">Non-binding proposal outlining key deal terms — purchase price, carry structure, timeline, and buyer entity — before a formal contract is drafted.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>Opening negotiations on creative finance deals</li>
+          <li>Testing seller interest and establishing price/terms</li>
+          <li>Presenting Sub-To, Seller Finance, or Pref-Eq in plain language before committing to a full PSA</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Fill property address and buyer LLC name</li>
+          <li>Input proposed purchase price and cash-to-seller breakdown</li>
+          <li>State seller carry terms (rate, balloon, payment if any)</li>
+          <li>Set proposed inspection and closing timeline</li>
+          <li>Send to seller; collect signature to confirm intent</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">Cash PSA</span>
+      <span class="doc-badge">Initiation</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">Core Purchase and Sale Agreement for cash, conventional, or investor deals. The binding contract defining every term — purchase price, EMD, timeline, parties, and closing costs.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>Standard wholesale assignments where end buyer pays cash or arranges own financing</li>
+          <li>All deal types as the baseline contract — addenda supplement it</li>
+          <li>Establishing the legal framework title uses to process the closing</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Sections 1.1–1.3: Property address, APN, legal description</li>
+          <li>Sections 1.4–1.5: EMD amount and purchase price breakdown</li>
+          <li>Sections 1.6–1.7: COE date and escrow agent info</li>
+          <li>Sections 1.9–1.12: Inspection period, closing costs, occupancy</li>
+          <li>Signature page: verify all signatures, initials, and dates</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+    <div style="padding:12px 20px;border-top:1px solid #ddd4c0;background:#faf9f5;">
+      <a href="psa.html" target="_blank"
+         style="display:inline-block;background:#1D3557;color:#fff;
+                padding:8px 22px;border-radius:50px;font-family:sans-serif;
+                font-size:13px;font-weight:700;text-decoration:none;">
+        📄 Blank Template
+      </a>
+    </div>
+
+  <div class="quiz-section" id="quiz-s1">
+    <h3>Section 1 Check</h3>
+    <p class="quiz-intro">Two questions — LOI and Cash PSA.</p>
+    <span class="difficulty-badge diff-basic">Level 1 — Basic Recall</span>
+
+    <div class="quiz-q" id="s1q1">
+      <div class="q-num">Question 1</div>
+      <div class="q-type">Multiple Choice</div>
+      <div class="q-text">The Letter of Intent is described as non-binding. What does this mean in practice?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('s1q1','A')"><span class="opt-letter">A</span> It is invalid until both parties notarize it</div>
+        <div class="mc-option" onclick="selectMC('s1q1','B')"><span class="opt-letter">B</span> Either party can walk away without liability before a formal PSA is signed</div>
+        <div class="mc-option" onclick="selectMC('s1q1','C')"><span class="opt-letter">C</span> The seller is not required to acknowledge receipt</div>
+        <div class="mc-option" onclick="selectMC('s1q1','D')"><span class="opt-letter">D</span> The buyer must still deposit EMD within 3 days</div>
+      </div>
+      <div class="feedback" id="fb-s1q1"></div>
+    </div>
+
+    <span class="difficulty-badge diff-basic" style="margin-top:8px;">Level 1 — Basic Recall</span>
+    <div class="quiz-q" id="s1q2">
+      <div class="q-num">Question 2</div>
+      <div class="q-type">Multiple Choice</div>
+      <div class="q-text">Which document is the core BINDING contract that defines every deal term and governs what title uses to process the closing?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('s1q2','A')"><span class="opt-letter">A</span> Letter of Intent (LOI)</div>
+        <div class="mc-option" onclick="selectMC('s1q2','B')"><span class="opt-letter">B</span> Assignment Agreement</div>
+        <div class="mc-option" onclick="selectMC('s1q2','C')"><span class="opt-letter">C</span> Cash PSA</div>
+        <div class="mc-option" onclick="selectMC('s1q2','D')"><span class="opt-letter">D</span> General Addenda</div>
+      </div>
+      <div class="feedback" id="fb-s1q2"></div>
+    </div>
+
+    <div class="quiz-submit-row">
+      <button class="btn-submit" id="submit-s1" onclick="submitQuiz('s1')">Submit Section 1 Answers</button>
+      <span class="quiz-score-display" id="score-s1"></span>
+    </div>
+    <div class="score-result" id="result-s1"><h4 id="result-s1-title"></h4><p id="result-s1-msg"></p></div>
+    <button class="btn-next" id="next-s1" onclick="showSection('s3')">Continue to Section 3: Assignment &amp; Cancellation →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 3: ASSIGNMENT & CANCELLATION
+══════════════════════════════════════════ -->
+<div class="section-panel" id="panel-s3">
+  <div class="section-header">
+    <div class="section-label">Section 3</div>
+    <h2 class="section-title">Assignment &amp; Cancellation</h2>
+    <p class="section-intro">Exiting or unwinding a deal. Two outcomes, two documents — know which situation calls for which.</p>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">Assignment Agreement</span>
+      <span class="doc-badge">Assignment</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">Transfers the buyer's equitable interest in the PSA to a new end buyer (assignee). Assignee steps into the buyer's position and closes the deal, paying an assignment fee.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>Wholesale exit strategy — the primary way wholesalers monetize a deal</li>
+          <li>Collecting the assignment fee from the end buyer</li>
+          <li>Legally documenting the transfer of contract rights</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Fill assignor and assignee legal names</li>
+          <li>Reference original PSA by property address and effective date</li>
+          <li>Enter assignment fee amount and payment method</li>
+          <li>State that assignee assumes all buyer obligations under the PSA</li>
+          <li>Both parties sign; send copy to title with original PSA</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+    <div style="padding:12px 20px;border-top:1px solid #ddd4c0;background:#faf9f5;">
+      <a href="assignment.html" target="_blank"
+         style="display:inline-block;background:#1D3557;color:#fff;
+                padding:8px 22px;border-radius:50px;font-family:sans-serif;
+                font-size:13px;font-weight:700;text-decoration:none;">
+        📄 Blank Template
+      </a>
+    </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">Cancellation Agreement</span>
+      <span class="doc-badge">Cancellation</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">Mutual agreement terminating the contract and releasing all parties. Also directs the title company on how to disburse the Earnest Money Deposit.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>Deal falls through — buyer cancels or parties agree to unwind</li>
+          <li>Releasing all parties cleanly with no remaining obligations</li>
+          <li>Directing EMD to the correct party</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Fill property and names of all parties</li>
+          <li>Enter EMD amount and specify release instructions</li>
+          <li>Both parties sign — seller first, then buyer/assignee</li>
+          <li>Send signed cancellation to title company immediately</li>
+          <li>Confirm title company acknowledges and cancels escrow</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+    <div style="padding:12px 20px;border-top:1px solid #ddd4c0;background:#faf9f5;">
+      <a href="cancellation.html" target="_blank"
+         style="display:inline-block;background:#1D3557;color:#fff;
+                padding:8px 22px;border-radius:50px;font-family:sans-serif;
+                font-size:13px;font-weight:700;text-decoration:none;">
+        📄 Blank Template
+      </a>
+    </div>
+
+  <div class="quiz-section" id="quiz-s3">
+    <h3>Section 3 Check</h3>
+    <p class="quiz-intro">Know which exit doc applies in which situation.</p>
+    <span class="difficulty-badge diff-intermediate">Level 2 — Intermediate Application</span>
+
+    <div class="quiz-q" id="s3q1">
+      <div class="q-num">Question 1</div>
+      <div class="q-type">Multiple Choice</div>
+      <div class="q-text">A deal falls through and both parties agree to unwind. Which document do you use — and what does it also direct?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('s3q1','A')"><span class="opt-letter">A</span> Assignment Agreement — transferring the buyer's position to a backup buyer</div>
+        <div class="mc-option" onclick="selectMC('s3q1','B')"><span class="opt-letter">B</span> Extension Addendum — extending the closing deadline to give the deal more time</div>
+        <div class="mc-option" onclick="selectMC('s3q1','C')"><span class="opt-letter">C</span> Cancellation Agreement — releases all parties and directs EMD disbursement</div>
+        <div class="mc-option" onclick="selectMC('s3q1','D')"><span class="opt-letter">D</span> Letter of Intent — re-opening negotiations on modified terms</div>
+      </div>
+      <div class="feedback" id="fb-s3q1"></div>
+    </div>
+
+    <div class="quiz-submit-row">
+      <button class="btn-submit" id="submit-s3" onclick="submitQuiz('s3')">Submit Section 3 Answers</button>
+      <span class="quiz-score-display" id="score-s3"></span>
+    </div>
+    <div class="score-result" id="result-s3"><h4 id="result-s3-title"></h4><p id="result-s3-msg"></p></div>
+    <button class="btn-next" id="next-s3" onclick="showSection('s4')">Continue to Section 4: JV &amp; Partnership Structures →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 4: JV & PARTNERSHIP
+══════════════════════════════════════════ -->
+<div class="section-panel" id="panel-s4">
+  <div class="section-header">
+    <div class="section-label">Section 4</div>
+    <h2 class="section-title">JV &amp; Partnership Structures</h2>
+    <p class="section-intro">When multiple parties bring capital or deal components, a formal JV structure replaces informal handshake deals. Know the two types.</p>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">Stacked JV Agreement (Preferred Equity)</span>
+      <span class="doc-badge">JV / Partnership</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">JV structured as preferred equity. Investors provide capital and receive a fixed preferred return plus equity participation before profits are split.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>Multi-investor deals requiring capital stacking</li>
+          <li>Investors who want preferred return + equity kicker</li>
+          <li>Structuring different return tiers across multiple JV partners</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Fill all party names (lead investor, co-investors, operating entity)</li>
+          <li>Enter each party's capital contribution and preferred return %</li>
+          <li>Define equity split after the preferred return waterfall</li>
+          <li>Set deal term, exit trigger, and distribution order</li>
+          <li>All members sign; file with operating agreement for deal LLC</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">Consultant JV Agreement</span>
+      <span class="doc-badge">JV / Partnership</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">JV where a consultant, deal finder, or co-wholesaler receives compensation for sourcing or facilitating a deal — structured as a JV rather than a simple referral fee.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>Compensating bird dogs, deal finders, or co-wholesalers formally</li>
+          <li>Documenting each party's role and contribution to avoid disputes</li>
+          <li>Any deal where a third party is owed a fee or profit share</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Define each party's role (lead buyer, consultant, deal sourcer)</li>
+          <li>Enter compensation structure (flat fee, % of assignment fee, or split)</li>
+          <li>Specify payment trigger (at assignment, at closing, etc.)</li>
+          <li>State non-solicitation and confidentiality obligations</li>
+          <li>Both parties sign before any deal docs are sent to seller</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+    <div style="padding:12px 20px;border-top:1px solid #ddd4c0;background:#faf9f5;">
+      <a href="jv.html" target="_blank"
+         style="display:inline-block;background:#1D3557;color:#fff;
+                padding:8px 22px;border-radius:50px;font-family:sans-serif;
+                font-size:13px;font-weight:700;text-decoration:none;">
+        📄 Blank Template
+      </a>
+    </div>
+
+  <div class="quiz-section" id="quiz-s4">
+    <h3>Section 4 Check</h3>
+    <p class="quiz-intro">Which JV structure fits which situation?</p>
+    <span class="difficulty-badge diff-intermediate">Level 2 — Intermediate Application</span>
+
+    <div class="quiz-q" id="s4q1">
+      <div class="q-num">Question 1</div>
+      <div class="q-type">Multiple Choice</div>
+      <div class="q-text">A deal finder sourced the property and wants formal compensation documented in writing. Which agreement covers this?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('s4q1','A')"><span class="opt-letter">A</span> Stacked JV Agreement (Preferred Equity)</div>
+        <div class="mc-option" onclick="selectMC('s4q1','B')"><span class="opt-letter">B</span> Credit Sponsorship Agreement</div>
+        <div class="mc-option" onclick="selectMC('s4q1','C')"><span class="opt-letter">C</span> Consultant JV Agreement</div>
+        <div class="mc-option" onclick="selectMC('s4q1','D')"><span class="opt-letter">D</span> Addendum to SLA</div>
+      </div>
+      <div class="feedback" id="fb-s4q1"></div>
+    </div>
+
+    <div class="quiz-submit-row">
+      <button class="btn-submit" id="submit-s4" onclick="submitQuiz('s4')">Submit Section 4 Answers</button>
+      <span class="quiz-score-display" id="score-s4"></span>
+    </div>
+    <div class="score-result" id="result-s4"><h4 id="result-s4-title"></h4><p id="result-s4-msg"></p></div>
+    <button class="btn-next" id="next-s4" onclick="showSection('s5')">Continue to Section 5: Creative Finance →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 5: CREATIVE FINANCE LOAN AGREEMENTS
+══════════════════════════════════════════ -->
+<div class="section-panel" id="panel-s5">
+  <div class="section-header">
+    <div class="section-label">Section 5</div>
+    <h2 class="section-title">Creative Finance Loan Agreements</h2>
+    <p class="section-intro">2nd position, preferred equity, and SLA modifications. Know which structure matches which capital arrangement and who holds what security interest.</p>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">Subordinated Loan Agreement — 2nd Position</span>
+      <span class="doc-badge">Creative Finance</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">Loan agreement where an investor provides bridge capital secured by a second-position lien, subordinate to the existing first mortgage.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>Investor-funded "Morby Method" 2nd position deals</li>
+          <li>Providing the buyer capital to fund the gap between 1st mortgage and purchase price</li>
+          <li>Structuring the investor's security interest and repayment terms</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Fill lender and borrower entity names</li>
+          <li>Enter loan amount (2nd position investment)</li>
+          <li>Set interest rate, monthly payment if any, and maturity date</li>
+          <li>Describe lien position and property as collateral</li>
+          <li>Both parties sign; lender's counsel records 2nd lien at closing</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">Preferred Equity Loan Agreement</span>
+      <span class="doc-badge">Creative Finance</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">Loan structured as preferred equity — investor receives priority preferred return before other equity participates, often with an additional equity percentage.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>Pref-Eq structures where investors want priority repayment + equity upside</li>
+          <li>Deals using preferred equity in lieu of a traditional loan or 2nd lien</li>
+          <li>Capital raises where the investor is an equity partner, not just a debt holder</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Fill investor and borrower/deal entity names</li>
+          <li>Enter preferred return rate (annualized %) and equity participation %</li>
+          <li>Set loan principal, term, and maturity/exit trigger</li>
+          <li>Define default provisions and investor remedies</li>
+          <li>Both parties sign; attach to operating agreement for deal LLC</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">Addendum to SLA</span>
+      <span class="doc-badge">Creative Finance</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">Modification document that amends terms of an existing Subordinated or Preferred Equity Loan Agreement — extensions, rate adjustments, or payoff modifications.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>Extending maturity when a deal needs more time to close or refinance</li>
+          <li>Modifying interest rate or repayment structure on an active loan</li>
+          <li>Documenting any agreed change to original SLA terms</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Reference original SLA by property and execution date</li>
+          <li>Clearly identify which terms are being modified</li>
+          <li>State new terms (new maturity date, rate, payment schedule)</li>
+          <li>Both original parties sign the addendum</li>
+          <li>Attach to original SLA; send copies to all parties and title</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-section" id="quiz-s5">
+    <h3>Section 5 Check</h3>
+    <p class="quiz-intro">Distinguish the 2nd position SLA from the Pref-Eq structure.</p>
+    <span class="difficulty-badge diff-advanced">Level 3 — Advanced Analysis</span>
+
+    <div class="quiz-q" id="s5q1">
+      <div class="q-num">Question 1</div>
+      <div class="q-type">Multiple Choice</div>
+      <div class="q-text">An investor provides capital secured by a lien BEHIND an existing first mortgage. Which document governs this arrangement?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('s5q1','A')"><span class="opt-letter">A</span> Preferred Equity Loan Agreement</div>
+        <div class="mc-option" onclick="selectMC('s5q1','B')"><span class="opt-letter">B</span> Subordinated Loan Agreement — 2nd Position</div>
+        <div class="mc-option" onclick="selectMC('s5q1','C')"><span class="opt-letter">C</span> Addendum to EMD Loan Agreement</div>
+        <div class="mc-option" onclick="selectMC('s5q1','D')"><span class="opt-letter">D</span> EMD Lending Documents</div>
+      </div>
+      <div class="feedback" id="fb-s5q1"></div>
+    </div>
+
+    <div class="quiz-submit-row">
+      <button class="btn-submit" id="submit-s5" onclick="submitQuiz('s5')">Submit Section 5 Answers</button>
+      <span class="quiz-score-display" id="score-s5"></span>
+    </div>
+    <div class="score-result" id="result-s5"><h4 id="result-s5-title"></h4><p id="result-s5-msg"></p></div>
+    <button class="btn-next" id="next-s5" onclick="showSection('s6')">Continue to Section 6: EMD Lending →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 6: EMD LENDING DOCUMENTS
+══════════════════════════════════════════ -->
+<div class="section-panel" id="panel-s6">
+  <div class="section-header">
+    <div class="section-label">Section 6</div>
+    <h2 class="section-title">EMD Lending Documents</h2>
+    <p class="section-intro">Third-party earnest money funding. Four documents govern this process — one to open it, one to evidence the debt, one to pay back the lender, and one to modify it if the timeline shifts.</p>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">EMD Lending Documents</span>
+      <span class="doc-badge">EMD Lending</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">Set of documents for third-party EMD funding — includes the EMD Loan Agreement plus irrevocable escrow instructions directing the title company on fund application and release.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>Deals where the buyer needs a third party to fund the EMD</li>
+          <li>EMD lenders requiring a formal agreement before wiring funds</li>
+          <li>Protecting the lender's interest through irrevocable disbursement instructions</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Fill EMD lender and borrower (buyer entity) names</li>
+          <li>Enter EMD amount and destination (escrow/title company account)</li>
+          <li>Attach irrevocable escrow instructions directing title on disbursement</li>
+          <li>Specify repayment terms — at closing or on cancellation</li>
+          <li>Send executed docs to title before EMD wire is sent</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+    <div style="padding:12px 20px;border-top:1px solid #ddd4c0;background:#faf9f5;">
+      <a href="emd.html" target="_blank"
+         style="display:inline-block;background:#1D3557;color:#fff;
+                padding:8px 22px;border-radius:50px;font-family:sans-serif;
+                font-size:13px;font-weight:700;text-decoration:none;">
+        📄 Blank Template
+      </a>
+    </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">Addendum to EMD Loan Agreement</span>
+      <span class="doc-badge">EMD Lending</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">Modifies the terms of an existing EMD Loan Agreement — most commonly used to extend the repayment deadline when a deal's closing date is pushed back.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>When the closing date moves and the EMD loan maturity needs extension</li>
+          <li>Modifying repayment amount or terms on an active EMD loan</li>
+          <li>Documenting any agreed change to the original EMD loan terms</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Reference original EMD Loan Agreement by date and property</li>
+          <li>State the modification (e.g., new maturity/repayment date)</li>
+          <li>Both original parties (lender + borrower) sign</li>
+          <li>Send copy to title company if escrow instructions are affected</li>
+          <li>Attach to original EMD Lending Documents for the deal file</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-section" id="quiz-s6">
+    <h3>Section 6 Check</h3>
+    <p class="quiz-intro">Two EMD documents — know when and why to use each one.</p>
+    <span class="difficulty-badge diff-intermediate">Level 2 — Intermediate Application</span>
+
+    <div class="quiz-q" id="s6q1">
+      <div class="q-num">Question 1</div>
+      <div class="q-type">Multiple Choice</div>
+      <div class="q-text">A deal's closing date was pushed back three weeks after the EMD lender's repayment deadline already passed. Which document does the TC use to resolve this — and what does it do?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('s6q1','A')"><span class="opt-letter">A</span> EMD Lending Documents — re-execute the entire loan bundle with new dates</div>
+        <div class="mc-option" onclick="selectMC('s6q1','B')"><span class="opt-letter">B</span> Addendum to EMD Loan Agreement — modifies the repayment deadline on the active loan</div>
+        <div class="mc-option" onclick="selectMC('s6q1','C')"><span class="opt-letter">C</span> Extension Addendum to Assignment — covers all deal extensions including EMD loan terms</div>
+        <div class="mc-option" onclick="selectMC('s6q1','D')"><span class="opt-letter">D</span> General Addenda — use for any modification to any document in the deal file</div>
+      </div>
+      <div class="feedback" id="fb-s6q1"></div>
+    </div>
+
+    <div class="quiz-submit-row">
+      <button class="btn-submit" id="submit-s6" onclick="submitQuiz('s6')">Submit Section 6 Answers</button>
+      <span class="quiz-score-display" id="score-s6"></span>
+    </div>
+    <div class="score-result" id="result-s6"><h4 id="result-s6-title"></h4><p id="result-s6-msg"></p></div>
+    <button class="btn-next" id="next-s6" onclick="showSection('s7')">Continue to Section 7: Entity &amp; Authorization →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 7: ENTITY & AUTHORIZATION
+══════════════════════════════════════════ -->
+<div class="section-panel" id="panel-s7">
+  <div class="section-header">
+    <div class="section-label">Section 7</div>
+    <h2 class="section-title">Entity &amp; Authorization Documents</h2>
+    <p class="section-intro">Entity resolutions, credit support, and distressed exits. These documents govern who can sign, who backs the deal, and what happens when it goes sideways.</p>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">Credit Sponsorship Agreement</span>
+      <span class="doc-badge">Entity / Auth</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">Agreement where a credit sponsor provides their credit to help the buyer qualify for financing. In exchange, the sponsor receives a non-voting membership interest in the buyer's LLC.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>Deals where the buyer needs a credit sponsor to qualify for a loan</li>
+          <li>Compensating the sponsor with equity (non-voting LLC membership)</li>
+          <li>Documenting the sponsor's obligations and rights before the deal closes</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Fill sponsor name and buyer/LLC name</li>
+          <li>Enter the % non-voting membership interest granted to sponsor</li>
+          <li>State sponsor's obligations (guaranty, co-signing, scope)</li>
+          <li>Define when the sponsor's interest terminates (loan payoff, exit, etc.)</li>
+          <li>Both parties sign; attach copy to LLC operating agreement</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">Single Signer Resolution</span>
+      <span class="doc-badge">Entity / Auth</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">Corporate resolution authorizing one designated member of a multi-member LLC to sign all transaction documents on behalf of the entity, without requiring all members to sign each document.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>Multi-member LLCs where one person handles the TC/closing process</li>
+          <li>Title companies requiring written authorization before accepting a single signer</li>
+          <li>Any deal where the LLC has multiple members but one person acts as deal lead</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Fill the full legal name of the LLC</li>
+          <li>List all current members of the LLC</li>
+          <li>Name the designated signer and their title (Manager, Member, etc.)</li>
+          <li>Define scope — specific deal or general authority for all transactions</li>
+          <li>All members sign; send copy to title with Contract Package</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-section" id="quiz-s7">
+    <h3>Section 7 Check</h3>
+    <p class="quiz-intro">Three authorization docs — know which one title requires before accepting a single signature from an LLC.</p>
+    <span class="difficulty-badge diff-intermediate">Level 2 — Intermediate Application</span>
+
+    <div class="quiz-q" id="s7q1">
+      <div class="q-num">Question 1</div>
+      <div class="q-type">Multiple Choice</div>
+      <div class="q-text">A multi-member LLC needs one designated person to sign all closing documents. Which document authorizes this — and which party typically requires it in writing?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('s7q1','A')"><span class="opt-letter">A</span> Credit Sponsorship Agreement — required by the DSCR lender</div>
+        <div class="mc-option" onclick="selectMC('s7q1','B')"><span class="opt-letter">B</span> Credit Sponsorship Agreement — required by the DSCR lender for all members</div>
+        <div class="mc-option" onclick="selectMC('s7q1','C')"><span class="opt-letter">C</span> Single Signer Resolution — required by the title company</div>
+        <div class="mc-option" onclick="selectMC('s7q1','D')"><span class="opt-letter">D</span> General Addenda — required by the seller</div>
+      </div>
+      <div class="feedback" id="fb-s7q1"></div>
+    </div>
+
+    <div class="quiz-submit-row">
+      <button class="btn-submit" id="submit-s7" onclick="submitQuiz('s7')">Submit Section 7 Answers</button>
+      <span class="quiz-score-display" id="score-s7"></span>
+    </div>
+    <div class="score-result" id="result-s7"><h4 id="result-s7-title"></h4><p id="result-s7-msg"></p></div>
+    <button class="btn-next" id="next-s7" onclick="showSection('s8')">Continue to Section 8: Addenda &amp; Extensions →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 8: ADDENDA & EXTENSIONS
+══════════════════════════════════════════ -->
+<div class="section-panel" id="panel-s8">
+  <div class="section-header">
+    <div class="section-label">Section 8</div>
+    <h2 class="section-title">Addenda &amp; Extensions</h2>
+    <p class="section-intro">Modifications to active deals. When something changes after the contract is signed, one of these two documents keeps the deal alive without canceling everything.</p>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">General Addenda (Seller Acknowledgment, etc.)</span>
+      <span class="doc-badge">Addenda</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">Supplemental documents that modify, clarify, or add terms to the primary PSA — including seller acknowledgment forms and any deal-specific supplements.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>Adding terms to the PSA not covered by the base contract</li>
+          <li>Seller acknowledgment that existing loans remain in seller's name</li>
+          <li>Any amendment or supplement needed before or during the transaction</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Reference the original PSA by property address and effective date</li>
+          <li>State exactly what is being added, modified, or acknowledged</li>
+          <li>Use unambiguous language — avoid contradicting the base contract</li>
+          <li>All relevant parties sign the addendum</li>
+          <li>Attach to Contract Package; send updated file to title</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header">
+      <span class="doc-card-title">Extension Addendum to Assignment</span>
+      <span class="doc-badge">Addenda</span>
+    </div>
+    <div class="doc-card-body">
+      <div class="doc-col">
+        <div class="doc-col-label">What It Is</div>
+        <p style="font-size:14px;margin-bottom:0;">Modifies an executed Assignment Agreement to extend the closing deadline, giving the end buyer additional time to close without canceling the transaction.</p>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Used For</div>
+        <ul>
+          <li>End buyer needs more time to fund or close — both parties agree</li>
+          <li>Avoiding cancellation when a closing delay is caused by title, lender, or funding</li>
+          <li>Documenting the agreed extension with a new closing date</li>
+        </ul>
+      </div>
+      <div class="doc-col">
+        <div class="doc-col-label">Key Steps</div>
+        <ul>
+          <li>Reference the original Assignment Agreement by property and execution date</li>
+          <li>State the new closing deadline clearly</li>
+          <li>Include any extension fee owed by assignee to assignor</li>
+          <li>Both assignor and assignee sign the addendum</li>
+          <li>Send to title company immediately to update their closing timeline</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-section" id="quiz-s8">
+    <h3>Section 8 Check</h3>
+    <p class="quiz-intro">Final section — distinguish which addendum fits each scenario.</p>
+    <span class="difficulty-badge diff-intermediate">Level 2 — Intermediate Application</span>
+
+    <div class="quiz-q" id="s8q1">
+      <div class="q-num">Question 1</div>
+      <div class="q-type">Multiple Choice</div>
+      <div class="q-text">The end buyer needs two more weeks to fund. Which document extends the assignment closing date without canceling the deal?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('s8q1','A')"><span class="opt-letter">A</span> General Addenda</div>
+        <div class="mc-option" onclick="selectMC('s8q1','B')"><span class="opt-letter">B</span> Cancellation Agreement</div>
+        <div class="mc-option" onclick="selectMC('s8q1','C')"><span class="opt-letter">C</span> Addendum to EMD Loan Agreement</div>
+        <div class="mc-option" onclick="selectMC('s8q1','D')"><span class="opt-letter">D</span> Extension Addendum to Assignment</div>
+      </div>
+      <div class="feedback" id="fb-s8q1"></div>
+    </div>
+
+    <div class="quiz-submit-row">
+      <button class="btn-submit" id="submit-s8" onclick="submitQuiz('s8')">Submit Section 8 Answers</button>
+      <span class="quiz-score-display" id="score-s8"></span>
+    </div>
+    <div class="score-result" id="result-s8"><h4 id="result-s8-title"></h4><p id="result-s8-msg"></p></div>
+    <button class="btn-next" id="next-s8" onclick="showSection('quiz')">Take the Module 2 Final Quiz →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FINAL MODULE QUIZ
+══════════════════════════════════════════ -->
+<div class="section-panel" id="panel-quiz">
+  <div class="section-header">
+    <div class="section-label">Module 2 — Final Assessment</div>
+    <h2 class="section-title">Module Quiz</h2>
+    <p class="section-intro">10 questions covering all 22 documents. No notes. Apply what you know — not just what you remember.</p>
+  </div>
+
+  <div class="quiz-section" id="quiz-final" style="margin-top:0;">
+    <h3>Full Module Assessment</h3>
+    <p class="quiz-intro">Questions span all 8 sections and escalate from recall through expert-level synthesis.</p>
+
+    <span class="difficulty-badge diff-basic">Q1–3: Basic Recall</span>
+
+    <div class="quiz-q" id="fq1">
+      <div class="q-num">Question 1</div><div class="q-type">Multiple Choice</div>
+      <div class="q-text">Which document is used BEFORE a formal contract to outline proposed deal terms and test seller interest — particularly on creative finance deals?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('fq1','A')"><span class="opt-letter">A</span> Cash PSA</div>
+        <div class="mc-option" onclick="selectMC('fq1','B')"><span class="opt-letter">B</span> Contract Package</div>
+        <div class="mc-option" onclick="selectMC('fq1','C')"><span class="opt-letter">C</span> Letter of Intent (LOI)</div>
+        <div class="mc-option" onclick="selectMC('fq1','D')"><span class="opt-letter">D</span> General Addenda</div>
+      </div>
+      <div class="feedback" id="fb-fq1"></div>
+    </div>
+
+    <div class="quiz-q" id="fq2">
+      <div class="q-num">Question 2</div><div class="q-type">True / False</div>
+      <div class="q-text">The Letter of Intent (LOI) is a binding contract that locks both parties into the deal terms.</div>
+      <div class="tf-options">
+        <button class="tf-btn" onclick="selectTF('fq2','True')">True</button>
+        <button class="tf-btn" onclick="selectTF('fq2','False')">False</button>
+      </div>
+      <div class="feedback" id="fb-fq2"></div>
+    </div>
+
+    <div class="quiz-q" id="fq3">
+      <div class="q-num">Question 3</div><div class="q-type">Multiple Choice</div>
+      <div class="q-text">Which document transfers the buyer's equitable interest in the PSA to a new end buyer?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('fq3','A')"><span class="opt-letter">A</span> Cancellation Agreement</div>
+        <div class="mc-option" onclick="selectMC('fq3','B')"><span class="opt-letter">B</span> Extension Addendum to Assignment</div>
+        <div class="mc-option" onclick="selectMC('fq3','C')"><span class="opt-letter">C</span> Assignment Agreement</div>
+        <div class="mc-option" onclick="selectMC('fq3','D')"><span class="opt-letter">D</span> General Addenda</div>
+      </div>
+      <div class="feedback" id="fb-fq3"></div>
+    </div>
+
+    <span class="difficulty-badge diff-intermediate" style="margin-top:8px;">Q4–6: Intermediate</span>
+
+    <div class="quiz-q" id="fq4">
+      <div class="q-num">Question 4</div><div class="q-type">Multiple Choice</div>
+      <div class="q-text">A TC receives a signed LOI from a seller who has agreed to the terms. What is the TC's immediate next step?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('fq4','A')"><span class="opt-letter">A</span> Send the LOI to the title company to open escrow</div>
+        <div class="mc-option" onclick="selectMC('fq4','B')"><span class="opt-letter">B</span> Draft and execute the Cash PSA to create a binding contract</div>
+        <div class="mc-option" onclick="selectMC('fq4','C')"><span class="opt-letter">C</span> Execute the Assignment Agreement to bring in the end buyer</div>
+        <div class="mc-option" onclick="selectMC('fq4','D')"><span class="opt-letter">D</span> File the Assignment Agreement with the county recorder</div>
+      </div>
+      <div class="feedback" id="fb-fq4"></div>
+    </div>
+
+    <div class="quiz-q" id="fq5">
+      <div class="q-num">Question 5</div><div class="q-type">Multiple Choice</div>
+      <div class="q-text">An investor provides capital to a buyer structured as a return on equity — the investor receives a preferred return instead of loan interest, and the arrangement is NOT secured by a lien. Which document governs this structure?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('fq5','A')"><span class="opt-letter">A</span> Subordinated Loan Agreement — 2nd Position</div>
+        <div class="mc-option" onclick="selectMC('fq5','B')"><span class="opt-letter">B</span> EMD Lending Documents</div>
+        <div class="mc-option" onclick="selectMC('fq5','C')"><span class="opt-letter">C</span> Preferred Equity Loan Agreement</div>
+        <div class="mc-option" onclick="selectMC('fq5','D')"><span class="opt-letter">D</span> Addendum to EMD Loan Agreement</div>
+      </div>
+      <div class="feedback" id="fb-fq5"></div>
+    </div>
+
+    <div class="quiz-q" id="fq6">
+      <div class="q-num">Question 6</div><div class="q-type">True / False</div>
+      <div class="q-text">The Single Signer Resolution allows one member of a multi-member LLC to sign closing documents on behalf of the entire entity — and it's typically required by the title company.</div>
+      <div class="tf-options">
+        <button class="tf-btn" onclick="selectTF('fq6','True')">True</button>
+        <button class="tf-btn" onclick="selectTF('fq6','False')">False</button>
+      </div>
+      <div class="feedback" id="fb-fq6"></div>
+    </div>
+
+    <span class="difficulty-badge diff-advanced" style="margin-top:8px;">Q7–8: Advanced</span>
+
+    <div class="quiz-q" id="fq7">
+      <div class="q-num">Question 7</div><div class="q-type">Multiple Choice — Scenario</div>
+      <div class="q-text">An investor funded the EMD on a deal, but the closing date just got pushed back 3 weeks. The investor's repayment deadline in the original EMD Loan Agreement has now passed. Which document resolves this?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('fq7','A')"><span class="opt-letter">A</span> A new EMD Lending Documents bundle — the original is void</div>
+        <div class="mc-option" onclick="selectMC('fq7','B')"><span class="opt-letter">B</span> Addendum to EMD Loan Agreement — modifying the repayment deadline</div>
+        <div class="mc-option" onclick="selectMC('fq7','C')"><span class="opt-letter">C</span> Extension Addendum to Assignment — this covers all closing extensions</div>
+        <div class="mc-option" onclick="selectMC('fq7','D')"><span class="opt-letter">D</span> General Addenda — any document modification requires a general addendum</div>
+      </div>
+      <div class="feedback" id="fb-fq7"></div>
+    </div>
+
+    <div class="quiz-q" id="fq8">
+      <div class="q-num">Question 8</div><div class="q-type">Multiple Choice — Scenario</div>
+      <div class="q-text">A buyer's LLC has two members, but only one handles the TC process. The DSCR lender requires a credit sponsor — an individual who contributes their credit in exchange for equity. Which document formalizes the sponsor's compensation and obligations?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('fq8','A')"><span class="opt-letter">A</span> Single Signer Resolution — authorizes the sponsor to sign on behalf of the LLC</div>
+        <div class="mc-option" onclick="selectMC('fq8','B')"><span class="opt-letter">B</span> Stacked JV Agreement — brings the sponsor in as an equity partner</div>
+        <div class="mc-option" onclick="selectMC('fq8','C')"><span class="opt-letter">C</span> EMD Lending Documents — the sponsor is treated as the EMD lender</div>
+        <div class="mc-option" onclick="selectMC('fq8','D')"><span class="opt-letter">D</span> Credit Sponsorship Agreement — grants non-voting LLC interest in exchange for credit</div>
+      </div>
+      <div class="feedback" id="fb-fq8"></div>
+    </div>
+
+    <span class="difficulty-badge diff-expert" style="margin-top:8px;">Q9–10: Expert Synthesis</span>
+
+    <div class="quiz-q" id="fq9">
+      <div class="q-num">Question 9</div><div class="q-type">Multiple Choice — Synthesis</div>
+      <div class="q-text">A deal is a Pref-Eq structure with a Consultant JV and a third-party EMD lender. List the documents that would be in the complete deal file at closing — which answer is most complete?</div>
+      <div class="mc-options">
+        <div class="mc-option" onclick="selectMC('fq9','A')"><span class="opt-letter">A</span> Cash PSA + Assignment Agreement + Addendum to EMD Loan Agreement</div>
+        <div class="mc-option" onclick="selectMC('fq9','B')"><span class="opt-letter">B</span> Cash PSA + Pref-Eq Loan Agreement + Consultant JV + EMD Lending Docs</div>
+        <div class="mc-option" onclick="selectMC('fq9','C')"><span class="opt-letter">C</span> Cash PSA + Subject-To Addendum + Stacked JV + EMD Lending Docs</div>
+        <div class="mc-option" onclick="selectMC('fq9','D')"><span class="opt-letter">D</span> Buyer Info Form + Cash PSA + Consultant JV + EMD Lending Docs</div>
+      </div>
+      <div class="feedback" id="fb-fq9"></div>
+    </div>
+
+    <div class="quiz-q" id="fq10">
+      <div class="q-num">Question 10</div><div class="q-type">Short Answer — Expert</div>
+      <div class="q-text">A new TC asks: "Why does the Contract Package have to be sent to title as a complete bundle? Can't we just send the PSA first and follow up with addenda later?" Write a clear explanation of why the complete bundle is required upfront and what problems sending docs piecemeal creates.</div>
+      <textarea class="short-answer-input" id="sa-fq10" placeholder="Explain why the Contract Package must be submitted as a complete bundle to title..." style="min-height:120px;"></textarea>
+      <div class="feedback" id="fb-fq10"></div>
+    </div>
+
+    <div class="quiz-submit-row">
+      <button class="btn-submit" id="submit-final" onclick="submitFinalQuiz()">Submit Final Quiz</button>
+      <span class="quiz-score-display" id="score-final"></span>
+    </div>
+    <div class="score-result" id="result-final"><h4 id="result-final-title"></h4><p id="result-final-msg"></p></div>
+    <button class="btn-next" id="next-final" onclick="showSection('wrapup')">View Results &amp; Wrap-Up →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     WRAP-UP
+══════════════════════════════════════════ -->
+<div class="section-panel" id="panel-wrapup">
+  <div class="section-header">
+    <div class="section-label">Module 2 Complete</div>
+    <h2 class="section-title">Wrap-Up &amp; Results</h2>
+  </div>
+
+  <div class="wrapup-grid">
+    <div class="stat-card"><div class="stat-num" id="stat-total-score">—</div><div class="stat-label">Total Points Earned</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-pct">—</div><div class="stat-label">Overall Score</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-sections">8/8</div><div class="stat-label">Sections Completed</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-grade">—</div><div class="stat-label">Module Grade</div></div>
+  </div>
+
+  <div class="content-block" style="margin-top:36px;">
+    <div class="block-title">Module 2 Learning Objectives — Check Off As You Go</div>
+    <p style="font-size:14px; color:var(--muted); margin-bottom:16px;">Click each checkbox as you feel confident you've mastered the objective.</p>
+    <ul class="objectives-list">
+      <li class="obj-item"><div class="obj-check" onclick="toggleObj(this)"></div><span>I can name all 22 TC template documents and their deal-phase grouping</span></li>
+      <li class="obj-item"><div class="obj-check" onclick="toggleObj(this)"></div><span>I know which document is always completed first on any new file</span></li>
+      <li class="obj-item"><div class="obj-check" onclick="toggleObj(this)"></div><span>I can explain the difference between the LOI (non-binding) and the Cash PSA (binding)</span></li>
+      <li class="obj-item"><div class="obj-check" onclick="toggleObj(this)"></div><span>I know why the Contract Package must be submitted as a complete bundle to title — and what goes wrong when it isn't</span></li>
+      <li class="obj-item"><div class="obj-check" onclick="toggleObj(this)"></div><span>I can distinguish the Assignment Agreement from the Cancellation Agreement and know which exits apply when</span></li>
+      <li class="obj-item"><div class="obj-check" onclick="toggleObj(this)"></div><span>I know the difference between a Stacked JV (Pref-Eq) and a Consultant JV Agreement</span></li>
+      <li class="obj-item"><div class="obj-check" onclick="toggleObj(this)"></div><span>I can distinguish the 2nd Position SLA from the Preferred Equity Loan Agreement</span></li>
+      <li class="obj-item"><div class="obj-check" onclick="toggleObj(this)"></div><span>I can distinguish EMD Lending Documents from the Addendum to EMD Loan Agreement and know when each is used</span></li>
+      <li class="obj-item"><div class="obj-check" onclick="toggleObj(this)"></div><span>I know when to use the Single Signer Resolution and which party requires it</span></li>
+      <li class="obj-item"><div class="obj-check" onclick="toggleObj(this)"></div><span>I can correctly select the right addendum or extension document for any mid-deal modification scenario</span></li>
+    </ul>
+  </div>
+
+  <div style="text-align:center; margin-top:16px;">
+    <a class="module-nav-btn" href="index.html">← Back to Module 1</a>
+  </div>
+  <div class="scroll-hint" style="margin-top:16px;">🎯 Complete all objectives before advancing to Module 3</div>
+</div>
+
+<div class="section-panel" id="panel-pdf">
+  <div class="section-header">
+    <div class="section-label">Reference</div>
+    <h2 class="section-title">Module 2 Document Reference</h2>
+    <p class="section-intro">Full document package — all Module 2 templates in one place. Use the Blank Template buttons on each section tab to open the interactive fillable versions.</p>
+  </div>
+
+  <!-- PDF.js viewer toolbar -->
+  <div id="pdf-toolbar" style="display:flex;align-items:center;gap:12px;background:#1a2e4a;padding:10px 18px;border-radius:8px 8px 0 0;font-family:sans-serif;">
+    <button onclick="pdfPrevPage()" style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:4px;padding:6px 14px;cursor:pointer;font-size:13px;font-weight:700;">&#8592; Prev</button>
+    <span style="color:#fff;font-size:13px;">Page <span id="pdf-page-num">1</span> of <span id="pdf-page-count">—</span></span>
+    <button onclick="pdfNextPage()" style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:4px;padding:6px 14px;cursor:pointer;font-size:13px;font-weight:700;">Next &#8594;</button>
+    <span style="flex:1;"></span>
+    <a href="module_2_documents.pdf" download style="background:#c8922a;color:#fff;border-radius:4px;padding:6px 14px;text-decoration:none;font-size:13px;font-weight:700;">⬇ Download</a>
+  </div>
+
+  <!-- PDF.js canvas container -->
+  <div id="pdf-container" style="background:#525659;padding:16px;border-radius:0 0 8px 8px;text-align:center;min-height:600px;overflow-y:auto;">
+    <canvas id="pdf-canvas" style="max-width:100%;box-shadow:0 2px 12px rgba(0,0,0,.5);background:#fff;"></canvas>
+    <p id="pdf-loading" style="color:#ccc;font-family:sans-serif;padding:40px;">Loading document…</p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+(function() {
+  var PDF_URL = 'module_2_documents.pdf';
+  var pdfDoc = null, pageNum = 1, pageRendering = false, pageNumPending = null;
+  var scale = 1.6;
+  var canvas = document.getElementById('pdf-canvas');
+  var ctx = canvas ? canvas.getContext('2d') : null;
+
+  if (typeof pdfjsLib === 'undefined') {
+    // pdfjsLib not yet loaded — wait for it
+    document.addEventListener('DOMContentLoaded', initPdf);
+  }
+
+  function initPdf() {
+    if (typeof pdfjsLib === 'undefined') return;
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    pdfjsLib.getDocument(PDF_URL).promise.then(function(doc) {
+      pdfDoc = doc;
+      var countEl = document.getElementById('pdf-page-count');
+      if (countEl) countEl.textContent = doc.numPages;
+      var loadEl = document.getElementById('pdf-loading');
+      if (loadEl) loadEl.style.display = 'none';
+      renderPage(pageNum);
+    }).catch(function(err) {
+      var loadEl = document.getElementById('pdf-loading');
+      if (loadEl) loadEl.innerHTML = 'Could not load PDF. <a href="module_2_documents.pdf" target="_blank" style="color:#c8922a;">Open in new tab →</a>';
+    });
+  }
+
+  function renderPage(num) {
+    if (!pdfDoc || !canvas) return;
+    pageRendering = true;
+    pdfDoc.getPage(num).then(function(page) {
+      var viewport = page.getViewport({ scale: scale });
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function() {
+        pageRendering = false;
+        if (pageNumPending !== null) {
+          renderPage(pageNumPending);
+          pageNumPending = null;
+        }
+      });
+      var numEl = document.getElementById('pdf-page-num');
+      if (numEl) numEl.textContent = num;
+    });
+  }
+
+  function queueRenderPage(num) {
+    if (pageRendering) { pageNumPending = num; } else { renderPage(num); }
+  }
+
+  window.pdfPrevPage = function() {
+    if (!pdfDoc || pageNum <= 1) return;
+    pageNum--;
+    queueRenderPage(pageNum);
+  };
+
+  window.pdfNextPage = function() {
+    if (!pdfDoc || pageNum >= pdfDoc.numPages) return;
+    pageNum++;
+    queueRenderPage(pageNum);
+  };
+
+  // Init when section tab is clicked (pdf.js may already be loaded by then)
+  var pdfTab = document.getElementById('tab-pdf');
+  if (pdfTab) {
+    pdfTab.addEventListener('click', function() {
+      setTimeout(function() {
+        if (!pdfDoc) initPdf();
+      }, 100);
+    });
+  }
+
+  // Also try init on window load
+  window.addEventListener('load', initPdf);
+})();
+</script>
+</main>
+
+<script>
+// ─── STATE ───
+const state = {
+  answers: {},
+  scores: { s1:0, s3:0, s4:0, s5:0, s6:0, s7:0, s8:0, final:0 },
+  submitted: { s1:false, s3:false, s4:false, s5:false, s6:false, s7:false, s8:false, final:false },
+  unlocked: ['s1','s3','s4','s5','s6','s7','s8','quiz','wrapup']
+};
+
+// ─── ANSWER KEYS ───
+const answers = {
+  s1q1: { type:'mc', correct:'B', explanation:'Correct! Non-binding means neither party has a legal obligation to close — the LOI tests seller interest and establishes proposed terms without locking anyone in. The PSA is what creates binding obligations.' },
+  s1q2: { type:'mc', correct:'C', explanation:'Correct! The Cash PSA is the core binding contract — it defines every deal term and is the governing document title uses to process the closing. The LOI is non-binding; addenda supplement the PSA.' },
+
+  s3q1: { type:'mc', correct:'C', explanation:'Correct! The Cancellation Agreement releases all parties from obligations and directs the title company on how to disburse the EMD. It\'s the mutual unwind document — not a renegotiation, not a transfer.' },
+
+  s4q1: { type:'mc', correct:'C', explanation:'Correct! The Consultant JV Agreement compensates deal finders, co-wholesalers, and bird dogs through a formal JV structure. The Stacked JV is for capital investors who want an equity position in the deal itself.' },
+
+  s5q1: { type:'mc', correct:'B', explanation:'Correct! The 2nd Position Subordinated Loan Agreement governs deals where the investor holds a second-position lien behind the existing first mortgage — this is the "Morby Method" structure.' },
+
+  s6q1: { type:'mc', correct:'B', explanation:'Correct! The Addendum to EMD Loan Agreement modifies the terms of an active EMD loan — most commonly to extend the repayment deadline when a deal\'s closing date slips. Re-executing the full EMD Lending bundle is not required for a date change.' },
+
+  s7q1: { type:'mc', correct:'C', explanation:'Correct! The Single Signer Resolution is a corporate authorization for multi-member LLCs. Title companies require it in writing before they\'ll accept a single signer on behalf of the full LLC.' },
+
+  s8q1: { type:'mc', correct:'D', explanation:'Correct! The Extension Addendum to Assignment modifies the closing deadline on an executed assignment agreement. It keeps the deal alive without canceling and re-doing everything.' },
+
+  fq1: { type:'mc', correct:'C', explanation:'Correct! The LOI is the pre-contract document used to outline proposed terms and test seller interest — especially on Sub-To, Seller Finance, and Pref-Eq deals — before committing to a full PSA.' },
+  fq2: { type:'tf', correct:'False', explanation:'False! The LOI is explicitly NON-binding — it outlines proposed terms to test seller interest before a formal contract is drafted.' },
+  fq3: { type:'mc', correct:'C', explanation:'Correct! The Assignment Agreement transfers the buyer\'s equitable interest in the PSA to a new end buyer. The end buyer steps in and pays an assignment fee.' },
+  fq4: { type:'mc', correct:'B', explanation:'Correct! The LOI is non-binding — it only confirms interest and terms. The TC\'s next step is to draft and execute the Cash PSA, which creates the legally binding contract and is the document used to open escrow with title.' },
+  fq5: { type:'mc', correct:'C', explanation:'Correct! The Preferred Equity Loan Agreement governs equity-based capital structures where the investor receives a preferred return — not loan interest — and the arrangement is not secured by a lien. This is distinct from the SLA 2nd Position, which IS a debt instrument secured by a subordinate lien.' },
+  fq6: { type:'tf', correct:'True', explanation:'True! The Single Signer Resolution authorizes one designated member to sign on behalf of the full LLC. Title companies require it in writing before accepting a single signatory.' },
+  fq7: { type:'mc', correct:'B', explanation:'Correct! The Addendum to EMD Loan Agreement modifies the terms (including repayment deadline) of an existing EMD loan. The Extension Addendum to Assignment covers the assignment closing date — a different document.' },
+  fq8: { type:'mc', correct:'D', explanation:'Correct! The Credit Sponsorship Agreement formalizes the arrangement between a credit sponsor and the buyer\'s LLC. The sponsor provides their credit to help qualify for financing, and receives a non-voting membership interest in the LLC as compensation.' },
+  fq9: { type:'mc', correct:'B', explanation:'Correct! A complete Pref-Eq deal with a Consultant JV and EMD lender requires: Cash PSA (binding contract), Pref-Eq Loan Agreement (investor equity structure), Consultant JV (deal finder compensation), and EMD Lending Docs (EMD loan bundle). Option A swaps in an Assignment Agreement and Addendum — wrong deal type and wrong docs for this structure.' },
+  fq10: { type:'short', modelAnswer:'The Contract Package must be submitted as a complete bundle because title companies open the escrow file based on the full set of governing documents. If you send the PSA alone, title may open the file under incorrect assumptions — wrong deal type, missing addenda terms, or an incomplete picture of the transaction structure. Sending addenda later creates version control problems: title may have already prepared preliminary docs, the escrow instructions may not reflect the correct terms, and parties may sign off on incomplete information. It also creates liability: if a deal closes without the Sub-To Addendum on file, there is no formal title record of the arrangement. Completeness upfront protects all parties and ensures the title company processes the deal correctly from day one.' }
+};
+
+// ─── SECTION NAVIGATION ───
+function showSection(id) {
+  document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateProgress();
+}
+
+function unlockSection(id) {
+  if (!state.unlocked.includes(id)) {
+    state.unlocked.push(id);
+    const tab = document.getElementById('tab-' + id);
+    if (tab) tab.classList.remove('locked');
+  }
+}
+
+function updateProgress() {
+  const secs = ['s1','s3','s4','s5','s6','s7','s8','final'];
+  const done = secs.filter(s => state.submitted[s]).length;
+  const pct = Math.min(100, Math.round((done / secs.length) * 100));
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function getSection(qid) {
+  if (qid.startsWith('fq')) return 'final';
+  return qid.substring(0, 2);
+}
+
+// ─── MC ───
+function selectMC(qid, opt) {
+  const sec = getSection(qid);
+  if (state.submitted[sec]) return;
+  state.answers[qid] = opt;
+  const q = document.getElementById(qid);
+  q.querySelectorAll('.mc-option').forEach(o => o.classList.remove('selected'));
+  q.querySelectorAll('.mc-option')[['A','B','C','D'].indexOf(opt)].classList.add('selected');
+}
+
+// ─── T/F ───
+function selectTF(qid, val) {
+  const sec = getSection(qid);
+  if (state.submitted[sec]) return;
+  state.answers[qid] = val;
+  const q = document.getElementById(qid);
+  q.querySelectorAll('.tf-btn').forEach(b => {
+    b.classList.remove('selected');
+    if (b.textContent === val) b.classList.add('selected');
+  });
+}
+
+// ─── QUIZ SUBMISSION ───
+function submitQuiz(sec) {
+  if (state.submitted[sec]) return;
+  state.submitted[sec] = true;
+  document.getElementById('submit-' + sec).disabled = true;
+
+  let pts = 0;
+  const qids = Object.keys(answers).filter(k => getSection(k) === sec);
+
+  qids.forEach(qid => {
+    const def = answers[qid];
+    const fb = document.getElementById('fb-' + qid);
+    if (!fb) return;
+
+    if (def.type === 'mc') {
+      const userAns = state.answers[qid];
+      const q = document.getElementById(qid);
+      const opts = q.querySelectorAll('.mc-option');
+      ['A','B','C','D'].forEach((l,i) => {
+        if (l === def.correct) opts[i].classList.add('correct');
+        else if (l === userAns && userAns !== def.correct) opts[i].classList.add('incorrect');
+      });
+      const isRight = userAns === def.correct;
+      if (isRight) pts++;
+      fb.className = 'feedback show ' + (isRight ? 'correct' : 'incorrect');
+      fb.textContent = isRight ? '✓ ' + def.explanation : '✗ The correct answer is (' + def.correct + '). ' + def.explanation;
+
+    } else if (def.type === 'tf') {
+      const userAns = state.answers[qid];
+      const q = document.getElementById(qid);
+      q.querySelectorAll('.tf-btn').forEach(b => {
+        if (b.textContent === def.correct) b.classList.add('correct');
+        else if (b.classList.contains('selected') && b.textContent !== def.correct) b.classList.add('incorrect');
+      });
+      const isRight = userAns === def.correct;
+      if (isRight) pts++;
+      fb.className = 'feedback show ' + (isRight ? 'correct' : 'incorrect');
+      fb.textContent = isRight ? '✓ ' + def.explanation : '✗ The answer is ' + def.correct + '. ' + def.explanation;
+
+    } else if (def.type === 'short') {
+      fb.className = 'feedback show model';
+      fb.innerHTML = '📖 <strong>Model Answer:</strong> ' + def.modelAnswer;
+    }
+  });
+
+  const autoQs = qids.filter(q => answers[q].type !== 'short');
+  state.scores[sec] = pts;
+
+  const scoreEl = document.getElementById('score-' + sec);
+  scoreEl.textContent = pts + ' / ' + autoQs.length + ' auto-graded points';
+  scoreEl.classList.add('show');
+
+  const pct = autoQs.length > 0 ? Math.round((pts / autoQs.length) * 100) : 100;
+  const pass = pct >= 60;
+
+  const resultEl = document.getElementById('result-' + sec);
+  resultEl.className = 'score-result show ' + (pass ? 'pass' : 'fail');
+  document.getElementById('result-' + sec + '-title').textContent = pass ? '✓ Section Complete — ' + pct + '%' : '⟳ Review Recommended — ' + pct + '%';
+  document.getElementById('result-' + sec + '-msg').textContent = pass
+    ? 'Good work. Review any model answers above, then continue.'
+    : 'Review the document content above, then continue when ready.';
+
+  document.getElementById('next-' + sec).classList.add('show');
+
+  const order = ['s1','s2','s3','s4','s5','s6','s7','s8','quiz','wrapup'];
+  const idx = order.indexOf(sec);
+  if (idx >= 0 && idx < order.length - 1) unlockSection(order[idx + 1]);
+
+  updateTotalScore();
+}
+
+function submitFinalQuiz() {
+  submitQuiz('final');
+  unlockSection('wrapup');
+  updateWrapup();
+}
+
+function updateTotalScore() {
+  let total = 0, max = 0;
+  ['s1','s2','s3','s4','s5','s6','s7','s8','final'].forEach(s => {
+    total += state.scores[s];
+    const qids = Object.keys(answers).filter(k => getSection(k) === s);
+    max += qids.filter(q => answers[q].type !== 'short').length;
+  });
+  document.getElementById('scoreDisplay').textContent = total + ' / ' + max;
+}
+
+function updateWrapup() {
+  let total = 0, max = 0;
+  ['s1','s2','s3','s4','s5','s6','s7','s8','final'].forEach(s => {
+    total += state.scores[s];
+    const qids = Object.keys(answers).filter(k => getSection(k) === s);
+    max += qids.filter(q => answers[q].type !== 'short').length;
+  });
+  const pct = max > 0 ? Math.round((total / max) * 100) : 0;
+  const grade = pct >= 90 ? 'A' : pct >= 80 ? 'B' : pct >= 70 ? 'C' : pct >= 60 ? 'D' : 'F';
+  document.getElementById('stat-total-score').textContent = total + '/' + max;
+  document.getElementById('stat-pct').textContent = pct + '%';
+  document.getElementById('stat-grade').textContent = grade;
+}
+
+function toggleObj(el) { el.classList.toggle('checked'); }
+
+// ─── INIT ───
+updateProgress();
+</script>
+</body>
+</html>
