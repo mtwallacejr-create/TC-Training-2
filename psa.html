@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSA — Leg 1 — Stacked Method TC Training</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--navy:#1D3557;--rust:#C04A1E;--gold:#C8921F;--cream:#FAF9F5;--blue-lt:#E8EEF4;--green-lt:#EDF5EE;--red-lt:#FDF0EE;--gold-lt:#FDF6E8;--purple:#5B3D8A;--border:#D6D0C4;}
+body{background:var(--cream);font-family:'Georgia','Times New Roman',serif;color:#2B2B2B;font-size:16px;line-height:1.7;}
+
+/* ── App header ── */
+.app-header{background:var(--navy);color:#fff;padding:14px 32px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.35);}
+.app-header h1{font-family:Arial,sans-serif;font-size:1rem;font-weight:700;letter-spacing:.03em;white-space:nowrap;}
+.app-subtitle{font-size:.72rem;color:#9BB5D0;margin-top:1px;font-family:Arial,sans-serif;}
+
+/* ── Tab bar ── */
+.tab-bar{background:#152B45;display:flex;overflow-x:auto;gap:1px;padding:0 24px;position:sticky;top:51px;z-index:199;box-shadow:0 2px 6px rgba(0,0,0,.25);}
+.tab-bar::-webkit-scrollbar{height:4px;}.tab-bar::-webkit-scrollbar-thumb{background:var(--rust);}
+.tab{padding:10px 16px;color:#9BB5D0;cursor:pointer;font-family:Arial,sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;border-bottom:3px solid transparent;transition:all .15s;}
+.tab:hover{color:#fff;background:rgba(255,255,255,.06);}
+.tab.active{color:#fff;border-bottom-color:var(--rust);}
+
+/* ── Help bar ── */
+.help-bar{background:var(--navy);color:#9BB5D0;font-family:Arial,sans-serif;font-size:.73rem;padding:7px 32px;display:flex;gap:24px;align-items:center;}
+.help-bar.hidden{display:none;}
+.help-icon{width:13px;height:13px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;}
+.help-icon.red{background:var(--rust);color:#fff;}
+.help-icon.gold{background:var(--gold);color:#fff;}
+
+/* ── Doc sections ── */
+.doc-section{display:none;}.doc-section.active{display:block;}
+
+/* ── Training view ── */
+.training-view{max-width:860px;margin:0 auto;padding:40px 40px 80px;}
+@media(max-width:640px){.training-view{padding:24px 20px 60px;}}
+.module-label{font-family:Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:.18em;color:var(--rust);text-transform:uppercase;margin-bottom:16px;}
+h1.page-title{font-size:2.2rem;font-weight:700;color:var(--navy);margin-bottom:20px;line-height:1.2;}
+h2.section-heading{font-size:1.45rem;font-weight:700;color:var(--navy);border-bottom:3px solid var(--navy);padding-bottom:8px;margin:48px 0 24px;}
+h3.subsection-heading{font-size:1.1rem;font-weight:700;color:var(--rust);margin:28px 0 12px;}
+p{margin-bottom:12px;}
+
+/* ── Callouts ── */
+.callout{border-radius:8px;padding:18px 22px;margin:18px 0;font-size:.95rem;}
+.callout p+p{margin-top:10px;}
+.callout-label{font-family:Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+.callout-gold{border:1.5px solid var(--gold);background:var(--gold-lt);}.callout-gold .callout-label{color:var(--gold);}
+.callout-quote{background:var(--blue-lt);border-left:5px solid var(--navy);font-size:1rem;font-weight:700;color:var(--navy);line-height:1.5;padding:18px 22px;}
+.callout-blue{border:1.5px solid #A2BDD4;background:#EEF4FA;}.callout-blue .callout-label{color:#2563A8;}
+.callout-pink{border:2px dashed #E07070;background:#FFF5F5;}.callout-pink .callout-label{color:var(--rust);}
+.callout-green{border:1.5px solid #5D9E6E;background:var(--green-lt);}.callout-green .callout-label{color:#2D7A44;}
+.callout-red{border:1.5px solid var(--rust);background:var(--red-lt);}.callout-red .callout-label{color:var(--rust);}
+.callout-keyterm{border:1.5px solid var(--gold);background:var(--gold-lt);}.callout-keyterm .callout-label{color:var(--gold);}
+.callout-step{border:1.5px solid #A2BDD4;background:var(--blue-lt);display:flex;gap:14px;align-items:flex-start;margin:10px 0;}
+.step-num{flex-shrink:0;width:32px;height:32px;background:var(--navy);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;font-weight:700;font-size:.85rem;}
+.step-content h4{color:var(--navy);font-size:.95rem;margin-bottom:4px;}
+
+/* ── Doc cards ── */
+.doc-card{border:1.5px solid #CBCBC8;border-radius:10px;padding:22px 24px;margin:18px 0;background:#fff;}
+.doc-badge{display:inline-block;background:var(--navy);color:#fff;font-family:Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:10px;}
+.doc-card h3{font-size:1.2rem;font-weight:700;color:var(--navy);margin-bottom:10px;}
+.doc-card p{font-size:.92rem;margin-bottom:12px;}
+.key-info-label{font-weight:700;color:#2B2B2B;margin:12px 0 8px;font-size:.92rem;}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.pill{border:1.5px solid var(--gold);color:#3A3A3A;border-radius:50px;padding:3px 14px;font-size:.82rem;}
+.pill-red{border-color:var(--rust);color:var(--rust);text-decoration:line-through;}
+.who-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;}
+@media(max-width:580px){.who-grid{grid-template-columns:1fr;}}
+.who-box{border-radius:6px;padding:12px 16px;font-size:.86rem;}
+.who-box h4{font-family:Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+.who-box ul{list-style:disc;padding-left:16px;}.who-box ul li{margin-bottom:3px;}
+.who-gets{background:#EDF5EE;border:1px solid #8DC89A;}.who-gets h4{color:#2D7A44;}
+.who-not{background:#FDF0EE;border:1px solid #E09080;}.who-not h4{color:var(--rust);}
+.templates-block{border:1.5px solid var(--gold);border-radius:8px;padding:14px 18px;margin-top:14px;background:#FFFDF5;}
+.templates-label{font-family:Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.templates-variant{margin-bottom:8px;font-size:.88rem;font-weight:700;color:#4A4A4A;}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
+.btn{display:inline-block;padding:9px 20px;border-radius:50px;font-family:Arial,sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:opacity .15s;white-space:nowrap;border:none;text-decoration:none;}
+.btn:hover{opacity:.82;}
+.btn-template{background:var(--navy);color:#fff;}
+.btn-soon{background:#B0B0B0;color:#fff;cursor:not-allowed;opacity:.7;pointer-events:none;}
+
+/* ── Compare grid ── */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
+@media(max-width:580px){.compare-grid{grid-template-columns:1fr;}}
+.compare-box{border:1.5px solid var(--border);border-radius:8px;padding:14px 16px;background:#fff;font-size:.9rem;}
+.compare-box h4{font-size:.95rem;margin-bottom:8px;color:var(--navy);}
+
+/* ── Tables ── */
+table.ref-table{width:100%;border-collapse:collapse;font-size:.88rem;margin:14px 0;}
+table.ref-table th{background:var(--purple);color:#fff;padding:9px 12px;text-align:left;font-family:Arial,sans-serif;}
+table.ref-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+table.ref-table tr:nth-child(even) td{background:#F5F3EF;}
+table.sign-table{width:100%;border-collapse:collapse;font-size:.86rem;margin:14px 0;}
+table.sign-table th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-family:Arial,sans-serif;}
+table.sign-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+table.sign-table tr:nth-child(even) td{background:#F5F3EF;}
+
+/* ── Misc training ── */
+.answer-line{border-bottom:1px solid #8A8A8A;width:100%;height:26px;display:block;margin:8px 0;}
+.fill-blank{border-bottom:1.5px solid #888;display:inline-block;min-width:160px;}
+.checklist{list-style:none;margin:12px 0;}
+.checklist li{padding:6px 0;font-size:.92rem;display:flex;gap:10px;align-items:flex-start;border-bottom:1px solid var(--border);}
+.checklist li::before{content:'☐';font-size:.95rem;flex-shrink:0;color:var(--navy);}
+.wrapup-item{margin-bottom:18px;font-size:.92rem;}
+.mistakes-list{list-style:none;margin:10px 0;}
+.mistakes-list li{padding:6px 0;border-bottom:1px solid #E0C0BC;font-size:.9rem;}
+hr{border:none;border-top:1.5px solid var(--border);margin:40px 0;}
+.doc-footer{text-align:center;font-size:.75rem;color:#888;margin-top:60px;}
+
+/* ════════ Document paper view ════════ */
+.paper-stage{padding:28px 32px;max-width:900px;margin:0 auto;}
+@media(max-width:640px){.paper-stage{padding:16px;}}
+.paper{background:#fff;box-shadow:0 2px 16px rgba(0,0,0,.16);padding:64px 72px;font-family:'Times New Roman',Times,serif;font-size:12pt;line-height:1.65;color:#111;position:relative;}
+@media(max-width:640px){.paper{padding:36px 24px;font-size:11pt;}}
+.sub-doc-break{border:none;border-top:3px dashed var(--rust);margin:44px -72px;position:relative;}
+.sub-doc-break::before{content:attr(data-label);position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#fff;padding:0 14px;font-family:Arial,sans-serif;font-size:9px;color:var(--rust);font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+.doc-title{text-align:center;font-weight:700;font-size:14pt;margin-bottom:4px;}
+.doc-subtitle{text-align:center;font-style:italic;color:#555;margin-bottom:22px;font-size:11pt;}
+.doc-p{margin-bottom:10px;}
+.doc-p.indent{margin-left:44px;}
+.doc-p.indent2{margin-left:66px;}
+.sec-hdr{font-weight:700;margin-bottom:8px;margin-top:16px;font-size:12.5pt;}
+.sec-hdr.lg{font-size:13.5pt;}
+.term-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+.term-table td{padding:3px 4px;vertical-align:top;font-family:'Times New Roman',Times,serif;font-size:12pt;line-height:1.5;}
+.term-table td.lbl{font-weight:700;width:200px;white-space:nowrap;padding-right:14px;}
+.parties-table{width:100%;border-collapse:collapse;margin-bottom:14px;}
+.parties-table th,.parties-table td{border:1px solid #333;padding:5px 8px;font-family:'Times New Roman',Times,serif;font-size:11pt;vertical-align:top;}
+.parties-table th{background:#DDD;font-weight:700;}
+.sig-block{margin:12px 0 6px;}
+.sig-line{display:flex;align-items:flex-end;gap:8px;margin-bottom:6px;font-family:'Times New Roman',Times,serif;font-size:12pt;}
+.sig-blank{flex:1;border-bottom:1px solid #333;min-width:100px;}
+.sig-blank.fixed{flex:none;width:190px;}
+.sig-inline{display:inline-block;border-bottom:1px solid #333;min-width:220px;}
+.chk-opt{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;}
+.chk-box{font-weight:700;white-space:nowrap;margin-top:1px;}
+.bullet-list{list-style:disc;margin:6px 0 10px 34px;}
+.bullet-list li{margin-bottom:5px;font-family:'Times New Roman',Times,serif;font-size:12pt;}
+
+/* ── Placeholders ── */
+.ph{color:#CC0000;font-style:italic;cursor:pointer;border-bottom:1px dashed #CC0000;transition:background .12s;border-radius:2px;padding:0 1px;}
+.ph:hover{background:#FFF0F0;}
+.ph.active{background:#FFE0E0;outline:2px solid #CC0000;}
+
+/* ── Tooltips ── */
+#tooltip{position:fixed;z-index:9999;max-width:330px;background:var(--navy);color:#fff;border-radius:8px;padding:13px 15px;box-shadow:0 4px 24px rgba(0,0,0,.4);font-family:Arial,sans-serif;font-size:.8rem;line-height:1.55;pointer-events:none;}
+#tooltip.hidden{display:none;}
+#tooltip .tt-field{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9BB5D0;margin-bottom:6px;}
+#tooltip .tt-explain{color:#fff;}
+#tooltip .tt-example{margin-top:8px;background:rgba(255,255,255,.1);border-radius:4px;padding:6px 10px;font-size:.76rem;color:#D8E8F5;}
+#tooltip .tt-example strong{color:#FFD580;display:block;margin-bottom:2px;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;}
+#tooltip .tt-tip{margin-top:8px;font-size:.74rem;color:#C8D8E8;border-top:1px solid rgba(255,255,255,.15);padding-top:7px;}
+#sel-tooltip{position:fixed;z-index:9998;max-width:310px;background:#152B45;color:#fff;border-radius:8px;padding:11px 13px;box-shadow:0 4px 18px rgba(0,0,0,.35);font-family:Arial,sans-serif;font-size:.78rem;line-height:1.5;pointer-events:none;border-left:3px solid var(--gold);}
+#sel-tooltip.hidden{display:none;}
+#sel-tooltip .st-label{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+#sel-tooltip .st-text{color:#D8E8F5;font-size:.78rem;line-height:1.55;}
+
+/* ── standalone page styles ──────────────────── */
+body { background:#F2F0EC; margin:0; font-family:Georgia,serif; }
+.doc-page-header {
+  background:#1D3557;
+  color:#fff;
+  padding:10px 32px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:300;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+}
+.dph-left { display:flex; flex-direction:column; gap:2px; }
+.dph-module {
+  font-family:Arial,sans-serif; font-size:10px; font-weight:700;
+  letter-spacing:.18em; text-transform:uppercase; color:#C8921F;
+}
+.dph-title {
+  font-family:Arial,sans-serif; font-size:.95rem; font-weight:700; color:#fff;
+}
+.dph-right {
+  display:flex; align-items:center; gap:20px;
+  font-family:Arial,sans-serif; font-size:.73rem; color:#9BB5D0;
+}
+.legend-item { display:flex; align-items:center; gap:6px; }
+.legend-dot {
+  width:10px; height:10px; border-radius:50%;
+  display:inline-block; flex-shrink:0;
+}
+.legend-dot.red { background:#C04A1E; }
+.legend-dot.gold { background:#C8921F; }
+.close-btn {
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:50px;
+  padding:5px 16px;
+  font-family:Arial,sans-serif;
+  font-size:.73rem;
+  font-weight:700;
+  cursor:pointer;
+  text-decoration:none;
+  transition: background .15s;
+}
+.close-btn:hover { background:rgba(255,255,255,.24); }
+/* Ensure tooltip renders above everything on standalone page */
+.tooltip { z-index:9999 !important; }
+.sel-tooltip { z-index:9998 !important; }
+</style>
+</head>
+<body>
+
+<div class="doc-page-header">
+  <div class="dph-left">
+    <span class="dph-module">Stacked Method — Module 2 Template</span>
+    <span class="dph-title">PSA — Leg 1</span>
+  </div>
+  <div class="dph-right">
+    <span class="legend-item"><span class="legend-dot red"></span>Click red text for field guide</span>
+    <span class="legend-item"><span class="legend-dot gold"></span>Highlight any paragraph for context</span>
+    <a class="close-btn" onclick="window.close()" href="#">✕ Close Tab</a>
+  </div>
+</div>
+
+<div id="tooltip" class="tooltip hidden"></div>
+<div id="sel-tooltip" class="sel-tooltip hidden"></div>
+
+<div class="paper-stage"><div class="paper">
+
+  <div class="doc-title">PURCHASE CONTRACT AND ESCROW INSTRUCTIONS</div>
+  <div class="doc-subtitle">[TEMPLATE — Fill-in Fields Marked in Red · Leg 1 of the Stacked Method]</div>
+
+  <p class="doc-p sec-hdr" data-context="basic-terms-psa">1. BASIC TERMS. This Section 1 defines the Basic Terms of this Agreement. All other sections reference back to this section by number.</p>
+
+  <table class="term-table" data-context="basic-terms-psa">
+    <tr><td class="lbl">1.1 Seller:</td><td class="val">
+      <span class="ph" data-field="Seller Name" data-explain="Full legal name of the property seller — must match exactly how their name appears on the deed/title. If jointly owned (married couple, two partners), list both names as they appear on title. A name mismatch between the PSA and title can delay closing." data-example="Robert &amp; Linda Thornton" data-tip="On a listed property, verify the seller's name against the county assessor record, not just the MLS listing — agents sometimes abbreviate or use nicknames.">[Seller Name]</span>
+    </td></tr>
+    <tr><td class="lbl"></td><td class="val">
+      <div>Address: <span class="ph" data-field="Seller Address" data-explain="Seller's full mailing address for formal notices under the Notices section. If the Seller lives out-of-state or has moved, confirm their current address." data-example="742 Thornton Way, Chandler, AZ 85225">[Seller Address]</span></div>
+      <div>Email: <span class="ph" data-field="Seller Email" data-explain="Seller's direct email — or the listing agent's email on represented deals. This is where DocuSign will be sent. Confirm with the agent whose email to use." data-example="rthornton@email.com">[Seller Email]</span></div>
+      <div>Phone: <span class="ph" data-field="Seller Phone" data-explain="Seller's direct phone number." data-example="(480) 555-0101">[Seller Phone]</span></div>
+    </td></tr>
+    <tr><td class="lbl">1.2 Buyer:</td><td class="val">
+      <span class="ph" data-field="Buyer Name" data-explain="Your wholesaling entity name, ALWAYS followed by 'and/or assigns.' This language is what gives you the legal right to assign the contract to an end buyer. Without it, you may not be able to transfer your interest." data-example="Stacked Acquisitions LLC, and/or assigns" data-tip="On MLS deals, some listing agents will push back on 'and/or assigns.' Know your state's default assignability rules — in many states, contracts are assignable unless explicitly prohibited.">[Buyer Name]</span>, and/or assigns
+    </td></tr>
+    <tr><td class="lbl"></td><td class="val">
+      <div>Address: <span class="ph" data-field="Buyer Address" data-explain="Your entity's registered or mailing address." data-example="1234 Deal Street, Suite 100, Phoenix, AZ 85001">[Buyer Address]</span></div>
+      <div>Email: <span class="ph" data-field="Buyer Email" data-explain="Your email address for DocuSign delivery and formal notices." data-example="offers@stackedacquisitions.com">[Buyer Email]</span></div>
+      <div>Phone: <span class="ph" data-field="Buyer Phone" data-explain="Your direct phone number." data-example="(480) 555-0200">[Buyer Phone]</span></div>
+    </td></tr>
+    <tr><td class="lbl">1.3 Property:</td><td class="val"></td></tr>
+    <tr><td class="lbl"></td><td class="val">
+      <div>Address: <span class="ph" data-field="Property Address" data-explain="Full street address of the subject property including city, state, and ZIP. Verify this against the county assessor record — do not rely solely on the seller's representation or the MLS listing." data-example="9876 Elm Drive, Mesa, AZ 85201">[Property Address]</span></div>
+      <div>Legal Description: <span class="ph" data-field="Legal Description" data-explain="The formal legal description from the county recorder's office — typically a lot/block/subdivision reference or metes-and-bounds description. Usually filled in as 'To Be Provided by Title' at the offer stage; title will pull the exact description when escrow opens." data-example="Lot 42, Block 7, Sunrise Estates Unit 3, as recorded in Map Book 214, Page 18, Maricopa County, AZ">[Legal Description]</span></div>
+      <div>APN: <span class="ph" data-field="APN" data-explain="Assessor's Parcel Number — the unique county identifier for this property. Find it on the county assessor's website by searching the address. Required by most title companies to open escrow." data-example="314-55-042">[APN]</span></div>
+    </td></tr>
+    <tr><td class="lbl">1.4 Purchase Price:</td><td class="val">$<span class="ph" data-field="Purchase Price" data-explain="The total price you are offering for the property. This is the number the lender, appraiser, and title company will see — it must NEVER contain seller finance terms. In a standard wholesale, this is your locked-in offer price. In the Morby Method, this is the same price that will appear in the Assignment Agreement." data-example="285,000" data-tip="Never inflate this number to 'make room' for seller finance — that is mortgage fraud. The purchase price is what the Seller actually receives at closing. Seller finance terms belong in the SSA only.">[Purchase Price]</span></td></tr>
+    <tr><td class="lbl">1.5 Earnest Money:</td><td class="val">$<span class="ph" data-field="EMD Amount" data-explain="The earnest money deposit — your good-faith deposit proving you're serious. Deposited with the escrow agent within the timeframe specified. Higher EMD signals stronger commitment. Wholesale deals commonly offer $500–$5,000; retail competitive offers often go 1–3% of purchase price." data-example="2,500" data-tip="The EMD amount in this PSA sets the floor for what the Assignee must deposit in the Assignment Agreement — the Assignee's EMD must be at least this amount.">[EMD Amount]</span> deposited with escrow agent within <span class="ph" data-field="EMD Due Days" data-explain="Number of business days after contract acceptance to deposit the EMD with the title company. Standard is 1–3 days. A shorter window (1 business day) signals a more serious buyer." data-example="1">[EMD Due Days]</span> business day(s) of acceptance ("EMD").</td></tr>
+    <tr><td class="lbl">1.6 Inspection Period:</td><td class="val"><span class="ph" data-field="Inspection Period Days" data-explain="Your due diligence window — the number of calendar days you have to inspect the property and decide whether to proceed, cancel, or renegotiate. During this period the EMD is typically 'soft' (refundable). Wholesale deals often target 7–14 days. Shorter = stronger, more competitive offer." data-example="10" data-tip="Never let the inspection period expire without a written decision. If you need more time, request a written extension BEFORE it expires. An expired inspection period with no cancellation notice typically means the EMD has gone hard.">[Inspection Period Days]</span> calendar days from acceptance for Buyer's due diligence and inspections ("Inspection Period"). Buyer may cancel for any or no reason during the Inspection Period and receive a full refund of the EMD.</td></tr>
+    <tr><td class="lbl">1.7 Close of Escrow:</td><td class="val"><span class="ph" data-field="Close of Escrow Date" data-explain="The target date for closing — when title transfers and all funds are disbursed. Wholesale deals commonly target 21–45 days from acceptance. Must be realistic given the title company's workload and any lender timelines if the buyer is financing." data-example="June 30, 2026" data-tip="This date will also appear in the Assignment Agreement and must match. If you need to extend, file a written Extension Addendum — both Seller and Buyer must sign it.">[Close of Escrow Date]</span> ("COE")</td></tr>
+    <tr><td class="lbl">1.8 Escrow Agent:</td><td class="val">
+      <div>Name: <span class="ph" data-field="Title Company Name" data-explain="Full legal name of the title company or closing attorney managing escrow. In AZ, both title companies and attorneys can serve as escrow agents." data-example="Heritage Title &amp; Escrow, Inc.">[Title Company Name]</span></div>
+      <div>Officer: <span class="ph" data-field="Escrow Officer Name" data-explain="The specific escrow officer assigned to this file. Get their direct name — you will communicate with them throughout the transaction." data-example="Dana Whitfield">[Escrow Officer Name]</span></div>
+      <div>Email: <span class="ph" data-field="Escrow Email" data-explain="The escrow officer's direct email. CC them on the DocuSign envelope so they receive the executed PSA automatically." data-example="dwhitfield@heritagetitle.com">[Escrow Email]</span></div>
+    </td></tr>
+    <tr><td class="lbl">1.9 Occupancy:</td><td class="val">
+      <div class="chk-opt"><span class="chk-box">[ ]</span><span><span class="ph" data-field="Occupancy — Vacant" data-explain="Check this if the property is currently vacant. Vacant properties are usually easiest to inspect and quickest to close — no tenant coordination needed." data-example="Vacant">[Vacant]</span></span></div>
+      <div class="chk-opt"><span class="chk-box">[ ]</span><span><span class="ph" data-field="Occupancy — Owner-Occupied" data-explain="Check this if the Seller currently lives in the property. Inspection scheduling must be coordinated with the Seller. The Seller typically has a right to remain through COE." data-example="Owner-Occupied">[Owner-Occupied]</span></span></div>
+      <div class="chk-opt"><span class="chk-box">[ ]</span><span><span class="ph" data-field="Occupancy — Tenant-Occupied" data-explain="Check this if a tenant currently occupies the property. State tenant rights laws govern notice periods for access and possession. Confirm lease terms and any required notice periods before committing to a COE date." data-example="Tenant-Occupied">[Tenant-Occupied]</span>. Lease expires: <span class="ph" data-field="Lease Expiration Date" data-explain="If tenant-occupied, enter the lease expiration date. This affects when the Buyer can take possession. Verify the actual lease document — do not rely on verbal representations." data-example="September 30, 2026">[Lease Expiration Date]</span></span></div>
+    </td></tr>
+    <tr><td class="lbl">1.10 Listing Agent:</td><td class="val">
+      <div>Name: <span class="ph" data-field="Listing Agent Name" data-explain="The listing agent's full legal name as it appears on their real estate license. Leave blank for FSBO (for sale by owner) deals." data-example="Patricia Nguyen">[Listing Agent Name]</span></div>
+      <div>Brokerage: <span class="ph" data-field="Brokerage Name" data-explain="The name of the listing agent's brokerage firm. Commission is paid to the brokerage, not directly to the agent." data-example="Southwest Realty Group">[Brokerage Name]</span></div>
+      <div>Email: <span class="ph" data-field="Agent Email" data-explain="The listing agent's direct email. DocuSign for the PSA typically goes to the agent's email on listed properties — confirm with the agent." data-example="pnguyen@swrealty.com">[Agent Email]</span></div>
+      <div>Phone: <span class="ph" data-field="Agent Phone" data-explain="Listing agent's direct phone number." data-example="(602) 555-0150">[Agent Phone]</span></div>
+    </td></tr>
+    <tr><td class="lbl">1.11 Commission:</td><td class="val">$<span class="ph" data-field="Commission Amount" data-explain="The total commission being paid to the listing brokerage at closing. On MLS listed properties this is pre-established in the listing agreement. On FSBO deals, this is negotiated as part of your offer. Paid directly from Seller's proceeds at closing — it appears on the HUD/settlement statement." data-example="8,550 (3% of $285,000)">[Commission Amount]</span> payable to <span class="ph" data-field="Brokerage Name (commission line)" data-explain="Same brokerage name as 1.10 — the entity that receives the commission disbursement from escrow." data-example="Southwest Realty Group">[Brokerage Name]</span> at close of escrow.</td></tr>
+    <tr><td class="lbl">1.12 Closing Costs:</td><td class="val">
+      <div>Seller pays: <span class="ph" data-field="Seller Closing Costs" data-explain="The specific closing costs the Seller has agreed to pay. Common Seller costs: Seller's share of escrow fees, owner's title insurance policy, real estate commission, seller-side recording fees, transfer taxes (varies by state/county). You can also negotiate seller concessions (Seller paying some of Buyer's costs) to sweeten a deal." data-example="Seller's escrow fee, owner's title insurance policy, real estate commission, transfer tax">[Seller Closing Costs]</span></div>
+      <div>Buyer pays: <span class="ph" data-field="Buyer Closing Costs" data-explain="The specific closing costs the Buyer is responsible for. Common Buyer costs: Buyer's share of escrow fees, lender's title insurance (if financing), recording fees, loan origination (if financing), inspections, appraisal." data-example="Buyer's escrow fee, lender's title insurance, recording fees">[Buyer Closing Costs]</span></div>
+    </td></tr>
+  </table>
+
+  <p class="doc-p sec-hdr" data-context="payment-terms-psa">2. PURCHASE PRICE AND PAYMENT TERMS.</p>
+  <div class="chk-opt" data-context="payment-terms-psa"><span class="chk-box"><strong>[ ]</strong></span><span><strong>All Cash.</strong> Buyer will pay the Purchase Price in cash at close of escrow. This offer is not contingent upon financing. Proof of funds to be provided within <span class="ph" data-field="Proof of Funds Days" data-explain="Number of days Buyer has to provide proof of funds (bank statement, LOC, etc.) after acceptance. Standard is 3–5 business days. For wholesale/investor deals, this is often waived or very short." data-example="3">[Proof of Funds Days]</span> business days of acceptance.</span></div>
+  <div class="chk-opt" data-context="payment-terms-psa"><span class="chk-box"><strong>[ ]</strong></span><span><strong>Financing.</strong> Buyer intends to finance a portion of the purchase. Loan Amount: $<span class="ph" data-field="Loan Amount" data-explain="The amount Buyer plans to borrow. This plus the down payment should equal the Purchase Price." data-example="228,000">[Loan Amount]</span>. Down Payment: $<span class="ph" data-field="Down Payment" data-explain="The cash Buyer will contribute at closing in addition to the financed amount. This is what appears on the HUD — not seller finance, not a holdback." data-example="57,000">[Down Payment]</span>. Lender: <span class="ph" data-field="Lender Name" data-explain="The name of the institution or individual providing the Buyer's financing." data-example="First Western Mortgage">[Lender Name]</span>. This offer IS contingent upon Buyer obtaining financing approval.</span></div>
+
+  <p class="doc-p sec-hdr" data-context="earnest-money-psa">3. EARNEST MONEY / DEPOSIT.</p>
+  <p class="doc-p" data-context="earnest-money-psa">The EMD shall be deposited with the Escrow Agent within the time specified in Section 1.5. During the Inspection Period, the EMD is fully refundable. After the Inspection Period expires without cancellation, the EMD becomes non-refundable ("hard") except as specifically provided herein. If Seller defaults or is unable to deliver clear title, Buyer shall receive a full refund of the EMD. If Buyer defaults after the Inspection Period expires, the EMD shall be forfeited to Seller as liquidated damages, as Seller's sole and exclusive remedy.</p>
+
+  <p class="doc-p sec-hdr" data-context="inspection-psa">4. INSPECTION PERIOD AND DUE DILIGENCE.</p>
+  <p class="doc-p" data-context="inspection-psa">During the Inspection Period defined in Section 1.6, Buyer and Buyer's agents, contractors, and representatives shall have reasonable access to the Property upon 24-hour notice to Seller to conduct any and all inspections, investigations, and tests Buyer deems appropriate, including but not limited to physical inspection, pest inspection, environmental assessment, and title review.</p>
+  <p class="doc-p" data-context="inspection-psa">Buyer may cancel this Agreement for any or no reason by delivering written notice to Seller prior to expiration of the Inspection Period, in which case the EMD shall be returned to Buyer in full. Buyer's failure to provide cancellation notice before expiration constitutes Buyer's election to proceed, and the EMD shall go hard (non-refundable) except as provided in Section 3.</p>
+
+  <p class="doc-p sec-hdr" data-context="title-psa">5. TITLE, VESTING, AND CLOSING.</p>
+  <p class="doc-p" data-context="title-psa">Seller shall convey marketable title to the Property to Buyer free and clear of all liens, encumbrances, and assessments except: (a) current year property taxes and assessments not yet due; (b) items shown as exceptions in the Preliminary Title Report acceptable to Buyer; and (c) any easements, CC&amp;Rs, or restrictions of record that do not materially impair Buyer's intended use.</p>
+  <p class="doc-p" data-context="title-psa">Buyer shall take title vested as: <span class="ph" data-field="Vesting" data-explain="How the Buyer's name will appear on the new deed — the exact legal entity or individual name(s). This must be determined before closing and entered exactly as it should appear on title. Common vesting: '[Entity Name], an Arizona LLC' or 'John Smith and Jane Smith, husband and wife.'" data-example="Premier Acquisitions LLC, an Arizona Limited Liability Company" data-tip="Get the vesting right on day one — changing vesting after the title report is issued can require additional paperwork and delay closing.">[Vesting]</span>, or as directed in writing prior to close of escrow.</p>
+
+  <p class="doc-p sec-hdr" data-context="condition-psa">6. CONDITION OF PROPERTY — AS-IS.</p>
+  <div class="chk-opt" data-context="condition-psa"><span class="chk-box"><strong>[X]</strong></span><span><strong>As-Is.</strong> Buyer is purchasing the Property in its current "as-is" condition, with all faults, and without any warranty or representation by Seller regarding the condition, fitness, or habitability of the Property. Buyer's due diligence during the Inspection Period is Buyer's sole opportunity to assess the Property's condition. Seller is not required to make any repairs.</span></div>
+  <div class="chk-opt" data-context="condition-psa"><span class="chk-box"><strong>[ ]</strong></span><span><strong>With Seller-Agreed Repairs.</strong> Seller agrees to complete the following repairs prior to COE: <span class="ph" data-field="Agreed Repairs" data-explain="List only the specific repairs Seller has agreed to complete before closing. Be precise — vague descriptions create disputes. Better practice: attach a separate Repair Addendum with specifics, cost estimates, and a completion deadline." data-example="Replace HVAC unit (minimum 3-ton, 15 SEER), repair roof leak at north valley per inspection report Item 4">[Agreed Repairs]</span></span></div>
+
+  <p class="doc-p sec-hdr" data-context="notices-psa">7. NOTICES.</p>
+  <p class="doc-p" data-context="notices-psa">All notices, demands, or requests required or permitted under this Agreement shall be in writing and effective upon personal delivery, email transmission, or receipt via U.S. certified mail or commercial courier, addressed to the parties at the addresses listed in Section 1. Time is of the essence with respect to all dates and deadlines in this Agreement.</p>
+
+  <p class="doc-p sec-hdr" data-context="assignment-psa">8. ASSIGNMENT.</p>
+  <div class="chk-opt" data-context="assignment-psa"><span class="chk-box"><strong>[X]</strong></span><span><strong>Buyer's interest in this Agreement is assignable</strong> without Seller's prior written consent. Buyer shall provide Seller and Escrow Agent written notice of any assignment, including the assignee's name, address, phone, and email. Buyer remains liable under this Agreement until close of escrow unless Seller consents in writing to a full novation.</span></div>
+  <div class="chk-opt" data-context="assignment-psa"><span class="chk-box"><strong>[ ]</strong></span><span>Buyer's interest in this Agreement is <strong>NOT assignable</strong> without Seller's prior written consent.</span></div>
+
+  <p class="doc-p sec-hdr">9. ADDITIONAL TERMS AND CONDITIONS.</p>
+  <p class="doc-p" style="color:#888;font-style:italic;">Use this section for any deal-specific terms not covered above — e.g., seller possession after COE, personal property included/excluded, contingencies, or special conditions.</p>
+  <p class="doc-p"><span class="ph" data-field="Additional Terms" data-explain="Any deal-specific terms not covered elsewhere. Common examples: Seller leaseback (Seller continues to occupy for X days after close, paying rent), specific personal property included (appliances, equipment), access restrictions, or special contingencies." data-example="Seller shall have the right to remain in occupancy for 14 days after close of escrow at no charge, after which a per diem of $100/day applies until Seller vacates.">[Additional Terms / N/A]</span></p>
+
+  <p class="doc-p sec-hdr">10. ELECTRONIC EXECUTION AND COUNTERPARTS.</p>
+  <p class="doc-p">This Agreement may be executed by electronic means and in any number of counterparts, each of which shall be deemed an original, and all of which when taken together shall constitute one instrument. Electronic signatures shall be deemed equivalent to original signatures for all purposes.</p>
+
+  <br/>
+  <p class="doc-p sec-hdr">SIGNATURES</p>
+  <p class="doc-p"><strong>SELLER</strong></p>
+  <div class="sig-block">
+    <div class="sig-line"><span style="min-width:60px;">Signature:</span><span class="sig-blank"></span><span style="margin-left:16px;white-space:nowrap;">Date: <span class="sig-inline" style="min-width:110px;"></span></span></div>
+    <div class="sig-line"><span style="min-width:60px;">Print Name:</span><span class="sig-blank"></span></div>
+    <div class="sig-line"><span style="min-width:60px;">Its:</span><span class="sig-blank fixed"></span></div>
+  </div>
+  <br/>
+  <div class="sig-block">
+    <div class="sig-line"><span style="min-width:60px;">Signature:</span><span class="sig-blank"></span><span style="margin-left:16px;white-space:nowrap;">Date: <span class="sig-inline" style="min-width:110px;"></span></span></div>
+    <div class="sig-line"><span style="min-width:60px;">Print Name:</span><span class="sig-blank"></span></div>
+  </div>
+  <br/>
+  <p class="doc-p"><strong>BUYER</strong></p>
+  <div class="sig-block">
+    <div class="sig-line"><span style="min-width:60px;">Signature:</span><span class="sig-blank"></span><span style="margin-left:16px;white-space:nowrap;">Date: <span class="sig-inline" style="min-width:110px;"></span></span></div>
+    <div class="sig-line"><span style="min-width:60px;">Print Name:</span><span class="ph" data-field="Buyer Name (signature block)" data-explain="The authorized signer's printed name and capacity. For an LLC: 'Jane Smith, Member/Manager.' For an individual: just their full name." data-example="Marcus Williams, Member — Stacked Acquisitions LLC">[Buyer Name / Title]</span></div>
+    <div class="sig-line"><span style="min-width:60px;">Its:</span><span class="sig-blank fixed"></span></div>
+  </div>
+
+</div></div><!-- /paper /paper-stage -->
+</div><!-- /doc-psa -->
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  ESCROW HOLDBACK                                          -->
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<script>
+<script>
+// ── CONTEXT LOOKUP ────────────────────────────────────────────
+const CONTEXT = {
+  // PSA – Leg 1
+  'basic-terms-psa':   { label:'Basic Terms', text:'This table is the spine of the deal — every key variable in one place. The Buyer field says "and/or assigns," which is the clause that makes wholesaling legal. Without it, the contract belongs to you personally and cannot be assigned to your end buyer.' },
+  'payment-terms-psa': { label:'Payment Terms', text:'How the end buyer is financing the purchase. On cash deals, you\'ll request Proof of Funds. On financed deals, you capture the loan structure. Knowing this early protects the close — a financing deal with a tight timeline is a red flag.' },
+  'earnest-money-psa': { label:'Earnest Money', text:'The deposit the Buyer puts up to show they\'re serious. As a wholesaler you want this as low as possible and refundable during the inspection window. The title company holds it in escrow — it\'s never paid to the Seller directly.' },
+  'inspection-psa':    { label:'Inspection Period', text:'Your exit window. During this period the Buyer (you or your assignee) can cancel for any reason and recover the EMD. Negotiate the longest period you can — this is your time to vet the deal, run numbers, and find an end buyer.' },
+  'title-psa':         { label:'Title & Vesting', text:'Vesting controls who legally holds the property. In wholesale, Buyer vests as their entity (LLC, trust, etc.) or "and/or assigns." Title must come back clean — liens, judgments, or back taxes can kill a deal at closing.' },
+  'condition-psa':     { label:'As-Is / Repairs', text:'As-is means Seller makes zero repairs. Buyers take the property in its current condition. This is standard in wholesale. If repairs are negotiated, they must be listed specifically with a dollar cap or the scope will expand at closing.' },
+  'notices-psa':       { label:'Notices', text:'Defines how and where legal communications are delivered. Emails are common and enforceable in most states. This section matters if a dispute arises — if notice wasn\'t delivered per contract, deadlines may be tolled.' },
+  'assignment-psa':    { label:'Assignment', text:'The checkbox that makes or breaks your wholesale. "Assignable" means you can sell your contract interest to an end buyer. "Not Assignable" means you\'re stuck. Always confirm this is checked before signing. Some sellers and agents push back — that\'s when you use a double close.' },
+
+  // Escrow Holdback
+  'holdback-parties':  { label:'Parties', text:'Identifies all parties to the holdback: Seller, original Buyer (you), and the new Buyer taking assignment. All three must sign because the Seller is agreeing to a change in who is buying their property.' },
+  'holdback-terms':    { label:'Holdback Terms', text:'The dollar amount held back in escrow and the trigger for its release. Common triggers: completion of agreed repairs, proof of permits, or a simple time delay. The holdback is your leverage after closing.' },
+  'holdback-release':  { label:'Release Conditions', text:'Specific, measurable conditions that must be met before funds release. Vague conditions create disputes. Good examples: "Seller provides receipts for roof replacement by licensed contractor totaling $12,000" — not "Seller completes roof work."' },
+
+  // Assignment Agreement
+  'assign-parties':    { label:'Parties', text:'Three parties: Original Buyer (Assignor — the wholesaler), New Buyer (Assignee — your end buyer), and the Seller is referenced but typically does not sign an assignment. The original PSA between Assignor and Seller stays in place.' },
+  'assign-terms':      { label:'Assignment Terms', text:'The assignment fee is your wholesale profit. On a Morby Method deal, this fee is captured in escrow (the holdback), not paid directly at assignment signing — so the purchase price in this document matches the original PSA.' },
+  'assign-reps':       { label:'Representations', text:'Assignor warrants the contract is valid, in force, and assignable. Assignee confirms they\'ve reviewed the property and PSA. These protect both sides from hidden problems with the underlying contract.' },
+
+  // JV Agreement
+  'jv-parties':        { label:'JV Parties', text:'The two entities forming a joint venture. Each must have authority to enter this agreement — get the operating agreement or entity docs to confirm authority before signing.' },
+  'jv-roles':          { label:'Roles & Responsibilities', text:'Who does what. Clear role delineation prevents disputes. Typically one party finds deals (deal finder) and one provides capital or closes (executor). Define deliverables, not just titles.' },
+  'jv-compensation':   { label:'Compensation Split', text:'How profits are divided. The split should reflect the contribution of each party. Capital-heavy roles may earn a larger share. Define what "profits" means — net of fees, closing costs, and reimbursements.' },
+  'jv-terms':          { label:'Term & Termination', text:'How long the JV lasts and how either party can exit. Per-deal JVs terminate at closing. Ongoing JVs need a termination trigger — usually a written notice period (30–90 days).' },
+
+  // EMD Lending
+  'emd1-terms':        { label:'Loan Basics (Part 1)', text:'The Earnest Money Loan Agreement is a private loan secured by the escrow funds. The Lender is not a bank — they\'re a private party advancing the deposit on Buyer\'s behalf. All three parts (Loan Agreement, Escrow Instructions, Assignment of EMD) must be executed together to protect the Lender.' },
+  'emd1-body':         { label:'Loan Terms', text:'Key protections: (1) Irrevocable instructions lock the Lender\'s repayment at the escrow level. (2) The 5-day repayment window on cancellation is short — if the deal falls through, the Buyer must return the deposit immediately. (3) 25% annual interest is a steep default rate by design — it motivates fast repayment.' },
+  'emd1-guarantee':    { label:'Personal Guarantee', text:'When Buyer is an LLC or entity, the personal guarantee requires the individual member(s) to be personally liable if the entity fails to repay. Without this, the Lender\'s only recourse against an LLC is limited to the entity\'s assets.' },
+  'emd2-terms':        { label:'Irrevocable Instructions (Part 2)', text:'Part 2 goes directly to the title company. "Irrevocable" means the Buyer cannot later tell escrow to pay someone else — the Lender\'s repayment is baked into the closing instructions and cannot be undone without the Lender\'s written consent.' },
+  'emd2-body':         { label:'Escrow Directive', text:'The legal directive to escrow. This is what actually causes the title company to write a check (or wire) to the Lender at closing. Without Part 2, the Loan Agreement in Part 1 is just a promise — Part 2 enforces it at the escrow level.' },
+  'emd3-terms':        { label:'EMD Assignment (Part 3)', text:'Part 3 assigns the right to receive any EMD refund. This covers the gap Parts 1 and 2 don\'t: what happens if escrow returns the deposit BEFORE closing? Without Part 3, a pre-closing refund goes to the Buyer — and the Lender has to chase it. Part 3 routes the refund directly to the Lender.' },
+  'emd3-body':         { label:'Assignment Directive', text:'Two instructions in one: (1) Buyer assigns the EMD refund right to the Lender. (2) Buyer irrevocably tells escrow to pay any deposit return directly to the Lender. Both are needed — the assignment transfers the right; the instruction tells escrow what to do with it.' },
+
+  // Cancellation
+  'cancellation-intro':  { label:'Mutual Release', text:'A cancellation is a mutual agreement — both parties must sign. A Seller cannot unilaterally cancel; neither can the Buyer (absent specific contract rights). If the inspection period is active, the Buyer typically has the unilateral right to cancel and recover the EMD — but a signed Mutual Release is still cleaner and faster.' },
+  'cancellation-funds':  { label:'EMD Distribution', text:'The title company will not release funds without written instructions signed by both parties. Choosing the distribution method here avoids confusion at title. If an EMD Lender is involved, the "Other" option must specifically direct funds to them per the EMD Loan Agreement.' }
+};
+
+// ── TOOLTIP STATE ─────────────────────────────────────────────
+let activeTooltip = null;
+let selTooltip = null;
+
+function hideTooltip() {
+  const t = document.getElementById('tooltip');
+  t.classList.add('hidden');
+  if (activeTooltip) { activeTooltip.classList.remove('ph-active'); activeTooltip = null; }
+}
+
+function hideSelTooltip() {
+  const t = document.getElementById('sel-tooltip');
+  t.classList.add('hidden');
+}
+
+// ── POSITION TOOLTIP ─────────────────────────────────────────
+function positionTooltip(el, tooltipEl) {
+  const rect = el.getBoundingClientRect();
+  const tw = 300;
+  let left = rect.left + window.scrollX;
+  let top = rect.bottom + window.scrollY + 8;
+  if (left + tw > window.innerWidth - 16) left = window.innerWidth - tw - 16;
+  if (left < 8) left = 8;
+  tooltipEl.style.left = left + 'px';
+  tooltipEl.style.top = top + 'px';
+}
+
+// ── PLACEHOLDER CLICKS ────────────────────────────────────────
+document.addEventListener('click', function(e) {
+  const ph = e.target.closest('.ph');
+  if (ph) {
+    e.stopPropagation();
+    if (activeTooltip === ph) { hideTooltip(); return; }
+    const t = document.getElementById('tooltip');
+    const field = ph.dataset.field || '';
+    const explain = ph.dataset.explain || '';
+    const example = ph.dataset.example || '';
+    const tip = ph.dataset.tip || '';
+    let html = '<div class="tt-field">' + field + '</div>';
+    html += '<div class="tt-explain">' + explain + '</div>';
+    if (example) html += '<div class="tt-example"><span class="tt-ex-label">Example:</span> ' + example + '</div>';
+    if (tip) html += '<div class="tt-tip">💡 ' + tip + '</div>';
+    t.innerHTML = html;
+    t.classList.remove('hidden');
+    if (activeTooltip) activeTooltip.classList.remove('ph-active');
+    activeTooltip = ph;
+    ph.classList.add('ph-active');
+    positionTooltip(ph, t);
+    hideSelTooltip();
+    return;
+  }
+  if (!e.target.closest('#tooltip') && !e.target.closest('.ph')) hideTooltip();
+  if (!e.target.closest('#sel-tooltip')) hideSelTooltip();
+});
+
+// ── TEXT SELECTION CONTEXT ────────────────────────────────────
+document.addEventListener('mouseup', function() {
+  const sel = window.getSelection();
+  if (!sel || sel.toString().trim().length < 3) return;
+  const node = sel.anchorNode;
+  if (!node) return;
+  let el = node.nodeType === 3 ? node.parentElement : node;
+  let contextKey = null;
+  while (el && el !== document.body) {
+    if (el.dataset && el.dataset.context) { contextKey = el.dataset.context; break; }
+    el = el.parentElement;
+  }
+  if (!contextKey || !CONTEXT[contextKey]) return;
+  const ctx = CONTEXT[contextKey];
+  const st = document.getElementById('sel-tooltip');
+  st.innerHTML = '<div class="st-label">' + ctx.label + '</div><div class="st-text">' + ctx.text + '</div>';
+  st.classList.remove('hidden');
+  const range = sel.getRangeAt(0);
+  const rect = range.getBoundingClientRect();
+  let left = rect.left + window.scrollX;
+  const tw = 320;
+  if (left + tw > window.innerWidth - 16) left = window.innerWidth - tw - 16;
+  if (left < 8) left = 8;
+  st.style.left = left + 'px';
+  st.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+});
+
+// ── SUB-DOC BREAK LABELS ─────────────────────────────────────
+document.querySelectorAll('.sub-doc-break').forEach(function(hr) {
+  if (hr.dataset.label) {
+    var sp = document.createElement('div');
+    sp.className = 'sub-doc-label';
+    sp.textContent = hr.dataset.label;
+    hr.parentNode.insertBefore(sp, hr.nextSibling);
+  }
+});
+</script>
+</body>
+</html>
